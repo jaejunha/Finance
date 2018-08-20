@@ -1,6 +1,23 @@
+import pymysql
 import urllib2
 import random
 import os
+
+'''
+sql_con = pymysql.connect(host='localhost', user='root', password='???', db='testdb', charset='utf8')
+
+sql_cur = sql_con.cursor()
+ 
+sql_query = "select * from customer"
+sql_cur.execute(sql_query)
+ 
+sql_rows = sql_cur.fetchall()
+print(sql_rows)
+print(sql_rows[0])
+print(sqlrows[1])
+ 
+sql_con.close()
+'''
 
 CONST_KOSPI200 = 'https://finance.naver.com/sise/entryJongmok.nhn?&page='
 l_clear = lambda: os.system('cls')
