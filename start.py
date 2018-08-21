@@ -1,32 +1,18 @@
-import urllib2
 import random
-import os
 
+import util as UTIL
 import dbms as DBMS
-
-list_kospi200 = []
-CONST_KOSPI200 = 'https://finance.naver.com/sise/entryJongmok.nhn?&page='
-l_clear = lambda: os.system('cls')
-
-def printMenu():
-	print 
-	print 'Finance Management Program'
-	print '======================================='
-	print '1. Random KOSPI 200'
-	print '2. Exit'
-	print '======================================='
+import http as HTTP
 
 if __name__ == '__main__':
-	while DBMS.connectDB() == False:
-		l_clear()
-		printMenu()
+	db_id, db_pwd, db_db, error = DBMS.checkDB()
+
+	while error == False:
+		UTIL.printMenu()
 		str_menu = raw_input('Please select the MENU >> ')
 		if str_menu == '1':
-			for i in range(1,22):
-				str_query = urllib2.urlopen(CONST_KOSPI200 + str(i)).read().split('\n')
-				for str_line in str_query:
-					if str_line.find('"ctg"')>=0:
-						list_kospi200.append((str_line.split('code=')[1].split('"')[0],str_line.split('>')[2].split('<')[0]))
+			if DBMS.checkToday(db_id, db_pwd, db_db) == False:
+				list_kospi200 = HTTP.getKOSPI200()
 			str_answer = raw_input('Would you want to see the list of KOSPI 200?(yes/no) >> ')
 			if str_answer == 'yes' or str_answer == 'YES':
 				int_i = 1
