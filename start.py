@@ -5,14 +5,17 @@ import dbms as DBMS
 import http as HTTP
 
 if __name__ == '__main__':
-	db_id, db_pwd, db_db, error = DBMS.checkDB()
-
-	while error == False:
+	db_id, db_pwd, db_db, bool_error = DBMS.checkDB()
+	bool_start = False
+	while bool_error == False:
 		UTIL.printMenu()
 		str_menu = raw_input('Please select the MENU >> ')
 		if str_menu == '1':
 			if DBMS.checkToday(db_id, db_pwd, db_db) == False:
-				list_kospi200 = HTTP.getKOSPI200()
+				list_kospi200 = HTTP.getKOSPI200(db_id, db_pwd, db_db)
+			elif bool_start == False:
+				# fetch list from db
+				bool_start = True
 			str_answer = raw_input('Would you want to see the list of KOSPI 200?(yes/no) >> ')
 			if str_answer == 'yes' or str_answer == 'YES':
 				int_i = 1
@@ -24,8 +27,8 @@ if __name__ == '__main__':
 			str_answer = raw_input('How many you want to choose? >> ')
 			int_random = int(str_answer)
 
-			#Need to try catch statement(wrong input)
-			#Need to try catch statement(out of range)
+#Need to try catch statement(wrong input)
+#Need to try catch statement(out of range)
 			while len(list_random) < int_random:
 				item_kospi200 = list_kospi200[random.randrange(0, int_size + 1)]
 				if item_kospi200 in list_random:
