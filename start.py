@@ -13,6 +13,8 @@ if __name__ == '__main__':
 		if str_menu == '1':
 			bool_update, list_kospi200 = MENU.randomKOSPI200(db_id, db_pwd, db_db, bool_update, list_kospi200)
 		elif str_menu == '2':
+			pass
+		elif str_menu == '3':
 			print 'Good Bye!'
 			break
 		else:

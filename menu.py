@@ -6,7 +6,7 @@ import dbms as DBMS
 def randomKOSPI200(db_id, db_pwd, db_db, bool_update, list_kospi200):
 	if DBMS.checkToday(db_id, db_pwd, db_db) == False:
 		print 'updating data...'
-		list_kospi200 = HTTP.getKOSPI200(db_id, db_pwd, db_db)
+		list_kospi200 = HTTP.getListOfKOSPI200(db_id, db_pwd, db_db)
 	elif bool_update == False:
 		list_kospi200 = DBMS.getKOSPI200(db_id, db_pwd, db_db)
 	bool_update = True
