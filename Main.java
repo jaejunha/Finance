@@ -12,7 +12,7 @@ public class Main {
 		int opt_iter;
 		int opt_i;
 		
-		int page = 10;
+		int page = 1;
 		
 		opt_iter = page / 10 -1;
 		opt_i = page % 10;
@@ -62,17 +62,59 @@ public class Main {
 
 			BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream()));
 			String str;
-			StringBuffer html = new StringBuffer();
+			String strs[];
 
-			while ((str = br.readLine()) != null) {
-				// System.out.println(inputLine + "\n");
-				html.append(str);
+			/* skip first table */
+			while ((str = br.readLine()).contains("</table") == false);
+			/* skip first tr */
+			while ((str = br.readLine()).contains("</tr") == false);
+
+			/* loop tr */
+			while(true) {
+				/* skip first td */
+				while ((str = br.readLine()).contains("</td") == false);
+				
+				for(int i=0;i<5;i++) {
+					while ((str = br.readLine()).contains("</td") == false);
+					while ((str = br.readLine()).contains("</td") == false);
+					/* title */
+					if(str.contains("tltle")) {
+						strs = str.split("\"|<|>|=");
+						System.out.println(strs[6] + " " + strs[11]);
+					}
+					else
+						return ;
+					while ((str = br.readLine()).contains("</td") == false);
+					while ((str = br.readLine()).contains("</td") == false);
+					while ((str = br.readLine()).contains("%") == false);
+					/* changed */
+					if(str.contains("0.00"))
+						System.out.println("0.00%");
+					else
+						System.out.println(str.replace("\t", ""));
+					while ((str = br.readLine()).contains("</td") == false);
+					while ((str = br.readLine()).contains("</td") == false);
+					while ((str = br.readLine()).contains("</td") == false);
+					while ((str = br.readLine()).contains("</td") == false);
+					/* PER */
+					System.out.println(str.split("<|>")[2]);
+					while ((str = br.readLine()).contains("</td") == false);
+					/* ROE */
+					System.out.println(str.split("<|>")[2]);		
+					while ((str = br.readLine()).contains("</td") == false);
+					/* PBR */
+					System.out.println(str.split("<|>")[2]);
+					while ((str = br.readLine()).contains("</td") == false);
+				}
+					
+				/* skip blank */
+				while ((str = br.readLine()).contains("</tr") == false);
+				while ((str = br.readLine()).contains("</tr") == false);
+				while ((str = br.readLine()).contains("</tr") == false);
 			}
-			br.close();
 
-			//System.out.println("URL Content... \n" + html.toString());
-
-		} catch (Exception e) {
+		} catch (NullPointerException e) {
+		} catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
