@@ -1,3 +1,7 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class Main {
 
@@ -7,44 +11,69 @@ public class Main {
 		long opt_start = System.currentTimeMillis();
 		int opt_iter;
 		int opt_i;
-
-		int test_n = 1000000008;
-
-		int s = 0;
-		opt_iter = test_n / 10 - 1;
-		opt_i = test_n % 10;
-		if ((test_n % 10) > 0)
-			opt_iter++;
 		
+		int page = 10;
+		
+		opt_iter = page / 10 -1;
+		opt_i = page % 10;
+		if(opt_i > 0)
+			opt_iter++;
 		do {
 			switch(opt_i) {
 			case 0:
-				s++;
+				print();
 			case 9:
-				s++;
+				print();
 			case 8:
-				s++;
+				print();
 			case 7:
-				s++;
+				print();
 			case 6:
-				s++;
+				print();
 			case 5:
-				s++;
+				print();
 			case 4:
-				s++;
+				print();
 			case 3:
-				s++;
+				print();
 			case 2:
-				s++;
+				print();
 			case 1:
-				s++;	
+				print();
 			}
 			
 			opt_i = 0;
-		} while (opt_iter-- > 0);
-		System.out.println(s);
-
-		System.out.println(System.currentTimeMillis() - opt_start);	
+			opt_iter--;
+		}while(opt_iter >= 0);
+		
+		System.out.println(System.currentTimeMillis() - opt_start);
 	}
 
+	public static void print() {
+		int type = 0;
+		int page = 1;
+
+		try {
+			String url = "https://finance.naver.com/sise/sise_market_sum.nhn?sosok=" + type + "&page=" + page;
+
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+			con.setRequestProperty("Cookie", "field_list=12|0000801A;");
+
+			BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String str;
+			StringBuffer html = new StringBuffer();
+
+			while ((str = br.readLine()) != null) {
+				// System.out.println(inputLine + "\n");
+				html.append(str);
+			}
+			br.close();
+
+			//System.out.println("URL Content... \n" + html.toString());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }
