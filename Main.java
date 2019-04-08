@@ -27,48 +27,62 @@ public class Main {
 		map_raw = new HashMap<>();
 		map_candidate = new HashMap<>();
 		
-		opt_iter = int_page / 10 -1;
+		opt_iter = int_page / 10;
 		opt_i = int_page % 10;
-		if(opt_i > 0)
-			opt_iter++;
-		do {
-			switch(opt_i) {
-			case 0:
-				collectItem();
-				int_currentPage++;
-			case 9:
-				collectItem();
-				int_currentPage++;
-			case 8:
-				collectItem();
-				int_currentPage++;
-			case 7:
-				collectItem();
-				int_currentPage++;
-			case 6:
-				collectItem();
-				int_currentPage++;
-			case 5:
-				collectItem();
-				int_currentPage++;
-			case 4:
-				collectItem();
-				int_currentPage++;
-			case 3:
-				collectItem();
-				int_currentPage++;
-			case 2:
-				collectItem();
-				int_currentPage++;
-			case 1:
-				collectItem();
-				int_currentPage++;
-			}
-			
-			opt_i = 0;
-			opt_iter--;
-		}while(opt_iter >= 0);
 
+		switch(opt_i) {
+		case 9:
+			collectItem();
+			int_currentPage++;
+		case 8:
+			collectItem();
+			int_currentPage++;
+		case 7:
+			collectItem();
+			int_currentPage++;
+		case 6:
+			collectItem();
+			int_currentPage++;
+		case 5:
+			collectItem();
+			int_currentPage++;
+		case 4:
+			collectItem();
+			int_currentPage++;
+		case 3:
+			collectItem();
+			int_currentPage++;
+		case 2:
+			collectItem();
+			int_currentPage++;
+		case 1:
+			collectItem();
+			int_currentPage++;
+		}
+		
+		for(int i=0;i<opt_iter;i++) {
+			collectItem();
+			int_currentPage++;
+			collectItem();
+			int_currentPage++;
+			collectItem();
+			int_currentPage++;
+			collectItem();
+			int_currentPage++;
+			collectItem();
+			int_currentPage++;
+			collectItem();
+			int_currentPage++;
+			collectItem();
+			int_currentPage++;
+			collectItem();
+			int_currentPage++;
+			collectItem();
+			int_currentPage++;
+			collectItem();
+			int_currentPage++;
+		}
+		
 		Iterator<String> iter;
 		String key;
 		Item item;
@@ -126,7 +140,6 @@ public class Main {
 				/* min */
 				if(str.contains("N/A")) {
 					list.add(key);
-					map_candidate.remove(key);
 					continue;
 				}
 				else
@@ -144,12 +157,14 @@ public class Main {
 				item.setMin(int_min);
 				item.setMax(int_max);
 				map_candidate.put(key, item);
+				System.out.println(key);
 
 			} catch (NullPointerException e) {
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
 		}
+		
 		iter = list.iterator();
 		while (iter.hasNext())
 			map_candidate.remove(iter.next());
