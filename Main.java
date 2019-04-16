@@ -4,13 +4,16 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 
 public class Main {
 
 	private static int int_currentPage = 1;
-	private static int int_currentType = 1;
-	private static HashMap<String, Item> map_raw, map_candidate;
+	private static int int_currentType = 0;
+	private static HashMap<String, Item> map_raw, map_candidate, map_low;
+	
+	private static double double_basePBR = 1.0;
+	private static double double_basePER = 15;
+	private static double double_basePercent = 20.0;
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -20,12 +23,10 @@ public class Main {
 		int opt_i;
 		
 		int int_page = 10;
-		double double_basePBR = 1.0;
-		double double_basePER = 15;
-		double double_basePercent = 20.0;
 		
 		map_raw = new HashMap<>();
 		map_candidate = new HashMap<>();
+		map_low = new HashMap<>();
 		
 		opt_iter = int_page / 10;
 		opt_i = int_page % 10;
@@ -83,91 +84,7 @@ public class Main {
 			int_currentPage++;
 		}
 		
-		Iterator<String> iter;
-		String key;
-		Item item;
-		
-		iter = map_raw.keySet().iterator();
-		while (iter.hasNext()) {
-		    key = iter.next();
-		    item = map_raw.get(key);
-		    
-		    /* skip minus */
-		    if(item.getPER().contains("-") || item.getROE().contains("-") || item.getPBR().contains("-"))
-		    	continue;
-		    
-		    /* check base PER */
-		    if(item.getPER().contains("N/A") == false && Double.parseDouble(item.getPER()) > double_basePER)
-		    	continue;
-		    
-		    /* check base PBR */
-		    if(item.getPBR().contains("N/A") == false && Double.parseDouble(item.getPBR()) > double_basePBR)
-		    	continue;
-		    
-		    map_candidate.put(key, item);
-		}
-
-		iter = map_candidate.keySet().iterator();
-		LinkedList<String> list = new LinkedList<>();
-		URL obj;
-		HttpURLConnection con;
-		BufferedReader br;
-		int int_min, int_max;
-		String str, url;
-		double cal;
-		
-		while (iter.hasNext()) {
-		    key = iter.next();
-		    item = map_raw.get(key);
-		    
-		    try {
-				url = "https://finance.naver.com/item/main.nhn?code=" + item.getCode();
-
-				obj = new URL(url);
-				con = (HttpURLConnection) obj.openConnection();
-				br = new BufferedReader(new InputStreamReader(con.getInputStream()));
-				
-				while ((str = br.readLine()).contains("</table") == false);
-				while ((str = br.readLine()).contains("</table") == false);
-				while ((str = br.readLine()).contains("</table") == false);
-				while ((str = br.readLine()).contains("</table") == false);
-				while ((str = br.readLine()).contains("</table") == false);
-				while ((str = br.readLine()).contains("</table") == false);
-				while ((str = br.readLine()).contains("</table") == false);
-				while ((str = br.readLine()).contains("</table") == false);
-				while ((str = br.readLine()).contains("</tr") == false);
-				while ((str = br.readLine()).contains("</em") == false);
-				/* min */
-				if(str.contains("N/A")) {
-					list.add(key);
-					continue;
-				}
-				else
-					int_min = Integer.parseInt(str.split("<|>")[2].replace(",", ""));
-				while ((str = br.readLine()).contains("</em") == false);
-				/* max */
-				int_max = Integer.parseInt(str.split("<|>")[2].replace(",", ""));
-
-				cal = 100 * (1 - (double)(item.getPrice()-int_min) / (int_max-int_min));
-				if(cal > double_basePercent) {
-					list.add(key);
-					continue;
-				}
-				
-				item.setMin(int_min);
-				item.setMax(int_max);
-				map_candidate.put(key, item);
-				System.out.println(key);
-
-			} catch (NullPointerException e) {
-			} catch(Exception e) {
-				e.printStackTrace();
-			}
-		}
-		
-		iter = list.iterator();
-		while (iter.hasNext())
-			map_candidate.remove(iter.next());
+		findLow();
 		
 		System.out.println(System.currentTimeMillis() - opt_start);
 	}
@@ -243,6 +160,97 @@ public class Main {
 		} catch (NullPointerException e) {
 		} catch(Exception e) {
 			e.printStackTrace();
+		}
+	}
+	
+
+	public static void findLow() {
+		map_candidate.clear();
+		
+		Iterator<String> iter;
+		String key;
+		Item item;
+		
+		iter = map_raw.keySet().iterator();
+		while (iter.hasNext()) {
+		    key = iter.next();
+		    item = map_raw.get(key);
+		    
+		    /* skip minus */
+		    if(item.getPER().contains("-") || item.getROE().contains("-") || item.getPBR().contains("-"))
+		    	continue;
+		    
+		    /* check base PER */
+		    if(item.getPER().contains("N/A") == false && Double.parseDouble(item.getPER()) > double_basePER)
+		    	continue;
+		    
+		    /* check base PBR */
+		    if(item.getPBR().contains("N/A") == false && Double.parseDouble(item.getPBR()) > double_basePBR)
+		    	continue;
+		    
+		    map_candidate.put(key, item);
+		}
+
+		iter = map_candidate.keySet().iterator();
+		URL obj;
+		HttpURLConnection con;
+		BufferedReader br;
+		int int_min, int_max;
+		String str, url;
+		double cal;
+		
+		while (iter.hasNext()) {
+		    key = iter.next();
+		    item = map_raw.get(key);
+		    
+		    try {
+				url = "https://finance.naver.com/item/main.nhn?code=" + item.getCode();
+
+				obj = new URL(url);
+				con = (HttpURLConnection) obj.openConnection();
+				br = new BufferedReader(new InputStreamReader(con.getInputStream()));
+				
+				while ((str = br.readLine()).contains("</table") == false);
+				while ((str = br.readLine()).contains("</table") == false);
+				while ((str = br.readLine()).contains("</table") == false);
+				while ((str = br.readLine()).contains("</table") == false);
+				while ((str = br.readLine()).contains("</table") == false);
+				while ((str = br.readLine()).contains("</table") == false);
+				while ((str = br.readLine()).contains("</table") == false);
+				while ((str = br.readLine()).contains("</table") == false);
+				while ((str = br.readLine()).contains("</tr") == false);
+				while ((str = br.readLine()).contains("</em") == false);
+				/* min */
+				if(str.contains("N/A"))
+					continue;
+				else {
+					try {
+						int_min = Integer.parseInt(str.split("<|>")[2].replace(",", ""));
+					}catch(java.lang.NumberFormatException e) {
+						/* case of ETF */
+						continue;
+					}catch(java.lang.ArrayIndexOutOfBoundsException e) {
+						/* case of derivatives */
+						continue;
+					}
+				}
+				while ((str = br.readLine()).contains("</em") == false);
+				/* max */
+				int_max = Integer.parseInt(str.split("<|>")[2].replace(",", ""));
+
+				cal = 100 * (1 - (double)(item.getPrice()-int_min) / (int_max-int_min));
+				if(cal > double_basePercent)
+					continue;
+				
+				item.setMin(int_min);
+				item.setMax(int_max);
+				item.setPercent((int)cal);			
+				map_low.put(key, item);
+				System.out.println((int)cal+" "+key);
+
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }

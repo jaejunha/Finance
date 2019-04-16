@@ -6,6 +6,7 @@ public class Item {
 	private String PER, ROE, PBR;
 	
 	private int max, min;
+	private int percent;
 
 	public Item(String code, int price, String changed, String PER, String ROE, String PBR) {
 		this.code = code;
@@ -44,24 +45,24 @@ public class Item {
 		return PER;
 	}
 
-	public void setPER(String pER) {
-		PER = pER;
+	public void setPER(String PER) {
+		this.PER = PER;
 	}
 
 	public String getROE() {
 		return ROE;
 	}
 
-	public void setROE(String rOE) {
-		ROE = rOE;
+	public void setROE(String ROE) {
+		this.ROE = ROE;
 	}
 
 	public String getPBR() {
 		return PBR;
 	}
 
-	public void setPBR(String pBR) {
-		PBR = pBR;
+	public void setPBR(String PBR) {
+		this.PBR = PBR;
 	}
 	
 	public int getMin() {
@@ -78,5 +79,13 @@ public class Item {
 	
 	public void setMax(int max) {
 		this.max = max;
+	}
+	
+	public int getPercent() {
+		return percent;
+	}
+	
+	public void setPercent(int percent) {
+		this.percent = percent;
 	}
 }
