@@ -2,6 +2,7 @@ package xyz.dreamline91.application.screen;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.os.StrictMode;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         init();
 
+        /* 권한 요청 */
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSION_CODE);
     }
@@ -40,11 +42,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume(){
         super.onResume();
 
+        /* 종목 업데이트가 필요한 경우 */
         if(itemOperator.checkUpdateItem() == false){
             textUpdateItem.setText("Need update");
             itemOperator.updateItem();
-        }else {
+        }
+        /* 종목 업데이트가 필요 하지 않은 경우 */
+        else {
             textUpdateItem.setText("Updated");
+            itemOperator.updateItem();                  //디버깅 용도로 임시로 추가
         }
     }
 }
