@@ -1,3 +1,8 @@
+"""
+구현할 것▼
+두꺼운 바닥 선 추가
+평균 등락폭 추가
+"""
 import sys
 
 DATE_DIVISION = 20180000
@@ -54,6 +59,7 @@ if __name__ == "__main__":
 	saveModifiedData(list_date, dic_data)
 
 	list_floor = []
+	cnt_floor = {}
 	length = len(list_date)
 	prev_floor = None
 	for i in range(0, length - 1):
@@ -67,7 +73,17 @@ if __name__ == "__main__":
 			floor = prev_floor
 		else:
 			prev_floor = floor
+		if floor in cnt_floor.keys():
+			cnt_floor[floor] += 1
+		else:
+			cnt_floor[floor] = 1
 		list_floor.append({"floor": floor, "date": date})
+
+	for floor in list(cnt_floor.keys()):
+		if cnt_floor[floor] < 20:
+			del(cnt_floor[floor])
+
+	print(cnt_floor)
 
 	file = open("temp.csv", "w")
 	file.write("날짜, 가격, 바닥, 바닥날짜\n")
