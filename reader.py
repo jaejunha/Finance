@@ -53,18 +53,23 @@ if __name__ == "__main__":
 	list_date, dic_data = readRawData()
 	saveModifiedData(list_date, dic_data)
 
-	list_min = []
+	list_floor = []
 	length = len(list_date)
+	prev_floor = None
 	for i in range(0, length - 1):
-		min = dic_data[list_date[i]]["high"]
-		date = 0
+		date = list_date[i]
+		floor = dic_data[list_date[i]]["high"]
 		for j in range(i + 1, length):
-			if min > dic_data[list_date[j]]["low"] and dic_data[list_date[j]]["low"] > 0:
-				min = dic_data[list_date[j]]["low"]
+			if floor > dic_data[list_date[j]]["low"] and dic_data[list_date[j]]["low"] > 0:
+				floor = dic_data[list_date[j]]["low"]
 				date = list_date[j]
-		list_min.append((min, date))
+		if floor == 0:
+			floor = prev_floor
+		else:
+			prev_floor = floor
+		list_floor.append({"floor": floor, "date": date})
 
 	file = open("temp.csv", "w")
 	file.write("날짜, 가격, 바닥, 바닥날짜\n")
 	for i, date in enumerate(list_date):
-		file.write("%d, %d, %d, %d\n" % (date, dic_data[date]["end"], list_min[i][0], list_min[i][1]))
+		file.write("%d, %d, %d, %d\n" % (date, dic_data[date]["end"], list_floor[i]["floor"], list_floor[i]["date"]))
