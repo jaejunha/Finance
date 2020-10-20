@@ -1,7 +1,6 @@
 """
 구현할 것▼
 두꺼운 바닥 선 추가
-평균 등락폭 추가
 """
 import sys
 
@@ -61,23 +60,28 @@ if __name__ == "__main__":
 	list_floor = []
 	cnt_floor = {}
 	length = len(list_date)
-	prev_floor = None
+	floor_prev = None
+	sum_diff = 0
 	for i in range(0, length - 1):
-		date = list_date[i]
-		floor = dic_data[list_date[i]]["high"]
+		sum_diff += abs(dic_data[list_date[i + 1]]["end"] - dic_data[list_date[i]]["end"]) / dic_data[list_date[i]]["end"] * 100.0
+		floor_date = list_date[i]
+		floor_value = dic_data[list_date[i]]["high"]
 		for j in range(i + 1, length):
-			if floor > dic_data[list_date[j]]["low"] and dic_data[list_date[j]]["low"] > 0:
-				floor = dic_data[list_date[j]]["low"]
-				date = list_date[j]
-		if floor == 0:
-			floor = prev_floor
+			if floor_value > dic_data[list_date[j]]["low"] and dic_data[list_date[j]]["low"] > 0:
+				floor_value = dic_data[list_date[j]]["low"]
+				floor_date = list_date[j]
+		if floor_value == 0:
+			floor_value = floor_prev
 		else:
-			prev_floor = floor
-		if floor in cnt_floor.keys():
-			cnt_floor[floor] += 1
+			floor_prev = floor_value
+		if floor_value in cnt_floor.keys():
+			cnt_floor[floor_value] += 1
 		else:
-			cnt_floor[floor] = 1
-		list_floor.append({"floor": floor, "date": date})
+			cnt_floor[floor_value] = 1
+		list_floor.append({"floor": floor_value, "date": floor_date})
+	sum_diff /= (length - 1)
+		
+	print(sum_diff)
 
 	for floor in list(cnt_floor.keys()):
 		if cnt_floor[floor] < 20:
