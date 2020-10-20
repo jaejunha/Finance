@@ -1,12 +1,13 @@
 """
 구현할 것▼
-두꺼운 바닥 선 추가
+고점이 바닥 대비 몇 %인지 (최대 손실 확인)
 """
 import sys
 
 DATE_DIVISION = 20180000
 UNIT_MILLION = 1000000
 UNIT_ORIGIN = 50
+UNIT_MONTH = 20
 
 """
 # For Samsung Electronics
@@ -57,8 +58,8 @@ if __name__ == "__main__":
 	list_date, dic_data = readRawData()
 	saveModifiedData(list_date, dic_data)
 
-	list_floor = []
 	cnt_floor = {}
+	date_floor = {}
 	length = len(list_date)
 	floor_prev = None
 	sum_diff = 0
@@ -78,18 +79,23 @@ if __name__ == "__main__":
 			cnt_floor[floor_value] += 1
 		else:
 			cnt_floor[floor_value] = 1
-		list_floor.append({"floor": floor_value, "date": floor_date})
+		date_floor[floor_value] = floor_date
 	sum_diff /= (length - 1)
 		
 	print(sum_diff)
 
+	list_floor = []
 	for floor in list(cnt_floor.keys()):
-		if cnt_floor[floor] < 20:
-			del(cnt_floor[floor])
+		if cnt_floor[floor] >= UNIT_MONTH:
+			list_floor.append((floor, date_floor[floor]))
 
-	print(cnt_floor)
-
+	list_floor.sort()
+	print(list_floor)
+	
+	cur_floor = 0
 	file = open("temp.csv", "w")
 	file.write("날짜, 가격, 바닥, 바닥날짜\n")
 	for i, date in enumerate(list_date):
-		file.write("%d, %d, %d, %d\n" % (date, dic_data[date]["end"], list_floor[i]["floor"], list_floor[i]["date"]))
+		if date > list_floor[cur_floor][1] and (cur_floor < len(list_floor) - 1):
+			cur_floor += 1
+		file.write("%d, %d, %d, %d\n" % (date, dic_data[date]["end"], list_floor[cur_floor][0], list_floor[cur_floor][1]))
