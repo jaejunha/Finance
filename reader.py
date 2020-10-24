@@ -82,15 +82,16 @@ if __name__ == "__main__":
 		date_floor[floor_value] = floor_date
 	sum_diff /= (length - 1)
 		
-	print(sum_diff)
+	print("평균 등락폭", sum_diff)
 
+	print("날짜(년월일)", "바닥(분할전)", "바닥(분할후)")
 	list_floor = []
 	for floor in list(cnt_floor.keys()):
 		if cnt_floor[floor] >= UNIT_MONTH:
 			list_floor.append((floor, date_floor[floor]))
+			print(date_floor[floor], floor, int(floor / 50))
 
 	list_floor.sort()
-	print(list_floor)
 	
 	cur_floor = 0
 	file = open("temp.csv", "w")
