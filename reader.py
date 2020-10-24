@@ -94,8 +94,8 @@ if __name__ == "__main__":
 	
 	cur_floor = 0
 	file = open("temp.csv", "w")
-	file.write("날짜, 가격, 바닥, 바닥날짜\n")
+	file.write("날짜, 종가, 시가, 고가, 저가, 바닥, 바닥날짜, 분할종가, 분할바닥\n")
 	for i, date in enumerate(list_date):
 		if date > list_floor[cur_floor][1] and (cur_floor < len(list_floor) - 1):
 			cur_floor += 1
-		file.write("%d, %d, %d, %d\n" % (date, dic_data[date]["end"], list_floor[cur_floor][0], list_floor[cur_floor][1]))
+		file.write("%d, %d, %d, %d, %d, %d, %d, %d, %d\n" % (date, dic_data[date]["end"], dic_data[date]["start"], dic_data[date]["high"], dic_data[date]["low"], list_floor[cur_floor][0], list_floor[cur_floor][1], dic_data[date]["end"] / 50, list_floor[cur_floor][0] / 50))
