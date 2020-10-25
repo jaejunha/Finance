@@ -1,5 +1,6 @@
 """
 구현할 것▼
+일반 적인 우상향 종목 (지수 ETF)에도 가능하도록 구현하기
 고점이 바닥 대비 몇 %인지 (최대 손실 확인)
 """
 import sys
@@ -8,6 +9,7 @@ DATE_DIVISION = 20180000
 UNIT_MILLION = 1000000
 UNIT_ORIGIN = 50
 UNIT_MONTH = 20
+MAX_VALUE = 999999999
 
 """
 # For Samsung Electronics
@@ -58,6 +60,7 @@ if __name__ == "__main__":
 	list_date, dic_data = readRawData()
 	saveModifiedData(list_date, dic_data)
 
+	dic_month = {}
 	cnt_floor = {}
 	date_floor = {}
 	length = len(list_date)
@@ -65,6 +68,19 @@ if __name__ == "__main__":
 	sum_diff = 0
 	for i in range(0, length - 1):
 		sum_diff += abs(dic_data[list_date[i + 1]]["end"] - dic_data[list_date[i]]["end"]) / dic_data[list_date[i]]["end"] * 100.0
+
+		month = int(list_date[i] / 100)
+		if month in dic_month.keys():
+			if dic_data[list_date[i]]["low"] < dic_month[month]["low"]:
+				if dic_data[list_date[i]]["low"] is not 0:
+					dic_month[month]["low"] = dic_data[list_date[i]]["low"]
+			if dic_data[list_date[i]]["high"] > dic_month[month]["high"]:
+				dic_month[month]["high"] = dic_data[list_date[i]]["high"]
+		else:
+			dic_month[month] = {}
+			dic_month[month]["low"] = MAX_VALUE
+			dic_month[month]["high"] = 0
+
 		floor_date = list_date[i]
 		floor_value = dic_data[list_date[i]]["high"]
 		for j in range(i + 1, length):
@@ -93,6 +109,10 @@ if __name__ == "__main__":
 
 	list_floor.sort()
 	
+	list_month = list(dic_month)
+	for month in list_month:
+		print(month, int(dic_month[month]["low"] / 50), int(dic_month[month]["high"] / 50), (dic_month[month]["low"] - dic_month[month]["high"]) * 100.0 / dic_month[month]["high"])
+
 	cur_floor = 0
 	file = open("temp.csv", "w")
 	file.write("날짜, 종가, 시가, 고가, 저가, 바닥, 바닥날짜, 분할종가, 분할바닥\n")
