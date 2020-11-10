@@ -14,7 +14,7 @@ def readRawData(index):
 
 		list_raw = line.strip().split(",")
 
-		date = int(list_raw[0])
+		date = int(list_raw[0].replace("-", ""))
 		list_date.append(date)
 		
 		if index == True:
