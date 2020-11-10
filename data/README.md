@@ -1,1 +1,0 @@
-# Data from: finance.yahoo.com
