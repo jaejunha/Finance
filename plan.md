@@ -5,3 +5,4 @@ Plan
 - Management
   - Encryption
 - Calculator
+  - Make GUI
