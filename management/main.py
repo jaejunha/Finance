@@ -1,4 +1,7 @@
+import os
+
 from datetime import datetime
+
 list_date = []
 dic_data = {}
 try:
@@ -44,26 +47,49 @@ except FileNotFoundError:
 	list_date.append(int(str_date))
 	dic_data[int(str_date)] = []
 
-if __name__=="__main__":
-	list_date.sort()
-	last_date = list_date[-1]
-
+def getInfo(day):
 	sum_money = 0
 	sum_frozen = 0
 	list_frozen = []
-	for dic_ele in dic_data[last_date]:
+	for dic_ele in dic_data[day]:
 		sum_money += dic_ele["money"]
 		sum_frozen += dic_ele["frozen"]
 		if "items" in dic_ele.keys():
 			for dic_frozen in dic_ele["items"]:
 				list_frozen.append(dic_frozen)
+
+	return sum_money, sum_frozen, list_frozen
+
+if __name__=="__main__":
+	list_date.sort()
+	day_first = list_date[0]
+	day_last = list_date[-1]
+
+	sum_money, sum_frozen, list_frozen = getInfo(day_last)
+
+	os.system("cls")
+	print("Management program")
+	print()
+	print("Date\t%4d-%2d-%2d" %(day_last / 10000, day_last % 10000 / 100, day_last % 100))
+
+	if day_last > day_first:
+		sum_first_money = getInfo(day_first)[0]
+		delta =  (sum_money - sum_first_money) / sum_money * 100
+		if delta > 0:
+			print("Total\t%s won (▲%.2f%%)" % ( format(sum_money, ","), delta ))
+		elif delta == 0:
+			print("Total\t%s won (-%.2f%%)" % ( format(sum_money, ","), 0 ))
+		else:
+			print("Total\t%s won (▼%.2f%%)" % ( format(sum_money, ","), delta ))
+	else:
+		print("Total\t%s won" % format(sum_money, ","))
+		
 	if sum_frozen == 0:
-		print("%4d-%2d-%2d, Total: %s won (Available: 100.00%%)" % (last_date / 10000, last_date % 10000 / 100, last_date % 100, format(sum_money, ",")))
+		print("Avail\t%s won (100.00%%)" % format(sum_money, ","))
 		
 	else:
-		print("%4d-%2d-%2d, Total: %s won (Available: %.2f%%)" % (last_date / 10000, last_date % 10000 / 100, last_date % 100, format(sum_money, ","), (sum_money - sum_frozen) / sum_money * 100))
-
-	if len(list_frozen) > 0:
+		print("Avail\t%s won (%.2f%%)" % ( format(sum_money - sum_frozen, ","), (sum_money - sum_frozen) / sum_money * 100) )
+		print()
 		print("Frozen list ▼")
 		for dic_frozen in list_frozen:
 			print(" - %s: %s won" % (dic_frozen["name"], format(dic_frozen["frozen"], ",")))
