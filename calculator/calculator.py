@@ -25,5 +25,5 @@ if __name__=="__main__":
 		sum_rate *= 100
 		sum_rate -= 100
 
-		print("Pr: %3d%%\tProfit:%3d%%" % (unit, sum_rate))
+		print("Pr: %3d%%\tProfit:%3.2f%%" % (unit, sum_rate))
 		unit += unit_pro
