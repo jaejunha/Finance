@@ -211,11 +211,23 @@ if __name__ == "__main__":
 			print()
 			print("시가총액\t%s 억원 (%d위, 상위 %.2f%%)" % (format(dic_item[x]["sum"], ","), rank_sum, (rank_sum / len_total) * 100))
 			print()
-			print("영업이익\t%s 억원 (%d위, 상위 %.2f%%)" % (format(dic_item[x]["profit"], ","), rank_profit, (rank_profit / len_total) * 100))
-			print("ROE\t\t%f (%d위, 상위 %.2f%%)" % (dic_item[x]["roe"], rank_roe, (rank_roe / len_total) * 100))
+			if rank_sum > rank_profit:
+				print("영업이익\t%s 억원 (%d위, 상위 %.2f%%) [시가총액 %d위: %s]" % (format(dic_item[x]["profit"], ","), rank_profit, (rank_profit / len_total) * 100, rank_profit, list_sum[rank_profit - 1][1]))
+			else:
+				print("영업이익\t%s 억원 (%d위, 상위 %.2f%%)" % (format(dic_item[x]["profit"], ","), rank_profit, (rank_profit / len_total) * 100))
+			if rank_sum > rank_roe:
+				print("ROE\t\t%f (%d위, 상위 %.2f%%) [시가총액 %d위: %s]" % (dic_item[x]["roe"], rank_roe, (rank_roe / len_total) * 100, rank_roe, list_sum[rank_roe - 1][1]))
+			else:
+				print("ROE\t\t%f (%d위, 상위 %.2f%%)" % (dic_item[x]["roe"], rank_roe, (rank_roe / len_total) * 100))
 			print()
-			print("PER\t\t%f (%d위, 상위 %.2f%%)" % (dic_item[x]["per"], rank_per, (rank_per / len_total) * 100))
-			print("PBR\t\t%f (%d위, 상위 %.2f%%)" % (dic_item[x]["pbr"], rank_pbr, (rank_pbr / len_total) * 100))
+			if rank_sum > rank_per:
+				print("PER\t\t%f (%d위, 상위 %.2f%%) [시가총액 %d위: %s]" % (dic_item[x]["per"], rank_per, (rank_per / len_total) * 100, rank_per, list_sum[rank_per - 1][1]))
+			else:
+				print("PER\t\t%f (%d위, 상위 %.2f%%)" % (dic_item[x]["per"], rank_per, (rank_per / len_total) * 100))
+			if rank_sum > rank_pbr:
+				print("PBR\t\t%f (%d위, 상위 %.2f%%) [시가총액 %d위: %s]" % (dic_item[x]["pbr"], rank_pbr, (rank_pbr / len_total) * 100, rank_pbr, list_sum[rank_pbr - 1][1]))
+			else:
+				print("PBR\t\t%f (%d위, 상위 %.2f%%)" % (dic_item[x]["pbr"], rank_pbr, (rank_pbr / len_total) * 100))
 			print()
 			print("부채총액\t%s 억원 (%d위, 상위 %.2f%%) [은행/증권은 특성상 부채가 높음]" % (format(dic_item[x]["dept"], ","), rank_dept, (rank_dept / len_total) * 100))
 			print()
