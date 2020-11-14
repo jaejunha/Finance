@@ -1,6 +1,7 @@
 import requests
 import re
 import os
+import sys
 
 from datetime import datetime
 
@@ -131,7 +132,14 @@ if __name__ == "__main__":
 	file.write("이름, 시총, 영업이익\n")
 
 	list_sum = []
+	list_dept = []
 	list_profit = []
+	list_per_p = []
+	list_per_m = []
+	list_roe = []
+	list_pbr_p = []
+	list_pbr_m = []
+	dic_item = {}
 	file_day = open("../_data/" + str_date + ".txt", "r")
 	for i, line in enumerate(file_day.readlines()):
 		if i == 0:
@@ -140,16 +148,79 @@ if __name__ == "__main__":
 		code = list_line[0].strip()
 		name = list_line[1].strip()
 		sum = int(list_line[2].strip())
+		dept = int(list_line[3].strip())
 		profit = int(list_line[4].strip())
+		per = float(list_line[5].strip())
+		roe = float(list_line[6].strip())
+		pbr = float(list_line[7].strip())
 
-		list_sum.append( (sum, code) )
-		list_profit.append( (profit, code) )
+		list_sum.append( (sum, name) )
+		list_dept.append( (dept, name) )
+		list_profit.append( (profit, name) )
+		list_roe.append( (roe, name) )
+
+		if per >= 0:
+			list_per_p.append( (per, name) )
+		else:
+			list_per_m.append( (per, name) )
+		if pbr >= 0:
+			list_pbr_p.append( (pbr, name) )
+		else:
+			list_pbr_m.append( (pbr, name) )
+
+		dic = {"sum": sum, "dept": dept, "profit": profit, "per": per, "roe": roe, "pbr": pbr}
+		dic_item[name] = dic
 
 		# 적자 제외
-		if profit >= 0:
+		if profit > 0:
 			file.write("%s, %d, %d\n" % (name, sum, profit) )
-
+	len_total = len(list_sum)
 	list_sum.sort(reverse = True)
+	list_dept.sort(reverse = True)
 	list_profit.sort(reverse = True)
-		
-	
+	list_roe.sort(reverse = True)
+	list_per_p.sort()
+	list_per_m.sort(reverse = True)
+	list_pbr_p.sort()
+	list_pbr_m.sort(reverse = True)
+	list_per = list_per_p + list_per_m
+	list_pbr = list_pbr_p + list_pbr_m
+
+	while True:
+		x = input("종목 이름 입력 (종료는 X입력)> ")
+		if x in dic_item.keys():
+			for i, ele in enumerate(list_sum):
+				if ele[1] == x:
+					rank_sum = i + 1
+			for i, ele in enumerate(list_dept):
+				if ele[1] == x:
+					rank_dept = i + 1
+			for i, ele in enumerate(list_profit):
+				if ele[1] == x:
+					rank_profit = i + 1
+			for i, ele in enumerate(list_per):
+				if ele[1] == x:
+					rank_per = i + 1
+			for i, ele in enumerate(list_roe):
+				if ele[1] == x:
+					rank_roe = i + 1
+			for i, ele in enumerate(list_pbr):
+				if ele[1] == x:
+					rank_pbr = i + 1
+
+			print()
+			print("시가총액\t%s 억원 (%d위, 상위 %.2f%%)" % (format(dic_item[x]["sum"], ","), rank_sum, (rank_sum / len_total) * 100))
+			print()
+			print("영업이익\t%s 억원 (%d위, 상위 %.2f%%)" % (format(dic_item[x]["profit"], ","), rank_profit, (rank_profit / len_total) * 100))
+			print("ROE\t\t%f (%d위, 상위 %.2f%%)" % (dic_item[x]["roe"], rank_roe, (rank_roe / len_total) * 100))
+			print()
+			print("PER\t\t%f (%d위, 상위 %.2f%%)" % (dic_item[x]["per"], rank_per, (rank_per / len_total) * 100))
+			print("PBR\t\t%f (%d위, 상위 %.2f%%)" % (dic_item[x]["pbr"], rank_pbr, (rank_pbr / len_total) * 100))
+			print()
+			print("부채총액\t%s 억원 (%d위, 상위 %.2f%%) [은행/증권은 특성상 부채가 높음]" % (format(dic_item[x]["dept"], ","), rank_dept, (rank_dept / len_total) * 100))
+			print()
+		else:
+			if x is "X" or x is "x":
+				sys.exit()
+			print("이름이 잘못 되었습니다")
+			print()
