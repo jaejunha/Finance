@@ -9,3 +9,5 @@ Plan
   - Make GUI
 - Specificity
   - Connect to Management
+- Value
+  - Make function (Modulation)
