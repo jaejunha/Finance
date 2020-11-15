@@ -1,4 +1,5 @@
 import os
+import matplotlib.pyplot as plt
 
 from datetime import datetime
 
@@ -67,36 +68,56 @@ if __name__=="__main__":
 
 	sum_money, sum_frozen, list_frozen = getInfo(day_last)
 
-	os.system("cls")
-	print("Management program")
-	print()
-	print("Date\t%4d-%2d-%2d" %(day_last / 10000, day_last % 10000 / 100, day_last % 100))
+	while True:
+		os.system("cls")
+		print("Management program")
+		print("=" * 30)
+		print("Date\t%4d-%2d-%2d" %(day_last / 10000, day_last % 10000 / 100, day_last % 100))
 
-	if day_last > day_first:
-		sum_first_money = getInfo(day_first)[0]
-		delta =  (sum_money - sum_first_money) / sum_money * 100
-		if delta > 0:
-			print("Total\t%s won (▲%.2f%%)" % ( format(sum_money, ","), delta ))
-		elif delta == 0:
-			print("Total\t%s won (-%.2f%%)" % ( format(sum_money, ","), 0 ))
+		if day_last > day_first:
+			sum_first_money = getInfo(day_first)[0]
+			delta =  (sum_money - sum_first_money) / sum_money * 100
+			if delta > 0:
+				print("Total\t%s won (▲%.2f%%)" % ( format(sum_money, ","), delta ))
+			elif delta == 0:
+				print("Total\t%s won (-%.2f%%)" % ( format(sum_money, ","), 0 ))
+			else:
+				print("Total\t%s won (▼%.2f%%)" % ( format(sum_money, ","), delta ))
 		else:
-			print("Total\t%s won (▼%.2f%%)" % ( format(sum_money, ","), delta ))
-	else:
-		print("Total\t%s won" % format(sum_money, ","))
+			print("Total\t%s won" % format(sum_money, ","))
 		
-	if sum_frozen == 0:
-		print("Avail\t%s won (100.00%%)" % format(sum_money, ","))
+		if sum_frozen == 0:
+			print("Avail\t%s won (100.00%%)" % format(sum_money, ","))
 		
-	else:
-		print("Avail\t%s won (%.2f%%)" % ( format(sum_money - sum_frozen, ","), (sum_money - sum_frozen) / sum_money * 100) )
+		else:
+			print("Avail\t%s won (%.2f%%)" % ( format(sum_money - sum_frozen, ","), (sum_money - sum_frozen) / sum_money * 100) )
+			print("-" * 30)
+			print("Frozen list ▼")
+			for dic_frozen in list_frozen:
+				print(" - %s: %s won" % (dic_frozen["name"], format(dic_frozen["frozen"], ",")))
+		print("=" * 30)
 		print()
-		print("Frozen list ▼")
-		for dic_frozen in list_frozen:
-			print(" - %s: %s won" % (dic_frozen["name"], format(dic_frozen["frozen"], ",")))
-	print()
-	print("Menu")
-	print("1. Add Account")
-	print("2. Update Account")
-	print("3. Delete Account")
-	print("4. Save Account")
-	print("5. Exit Program")
+		print("Menu")
+		print("=" * 30)
+		print("1. Show History")
+		print("2. Add Account")
+		print("3. Update Account")
+		print("4. Delete Account")
+		print("5. Save Account")
+		print("6. Exit Program")
+		print("=" * 30)
+		while True:
+			try:
+				select = int(input("Select > "))
+				break
+			except ValueError:
+				print("Please enter the correct number")
+		if select == 1:
+			list_x = []
+			list_y = []
+			for date in list_date:
+				list_x.append(date % 10000)
+				list_y.append(getInfo(date)[0])
+			plt.plot(list_x, list_y)
+			plt.show()
+		
