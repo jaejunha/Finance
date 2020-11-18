@@ -27,10 +27,11 @@ try:
 				for raw_item in raw_list_item:
 					raw_item_ele = raw_item.split(",")
 					str_code = raw_item_ele[0]
-					str_name = raw_item_ele[1]
+					# 위의 str_name과 이름 겹쳐서 str_name -> str_item
+					str_item = raw_item_ele[1]
 					int_frozen = int(raw_item_ele[2])
 					int_unit = int(raw_item_ele[3])
-					list_item.append({"code": str_code, "name": str_name, "frozen": int_frozen, "unit": int_unit})
+					list_item.append({"code": str_code, "name": str_item, "frozen": int_frozen, "unit": int_unit})
 				int_frozen = int(raw_frozen_money[0])
 				int_money = int(raw_frozen_money[1])
 				dic_data[int_date].append({"name": str_name, "type": str_type, "frozen": int_frozen, "money": int_money, "items": list_item})
@@ -49,24 +50,41 @@ except FileNotFoundError:
 	dic_data[int(str_date)] = []
 
 def getInfo(day):
-	sum_money = 0
-	sum_frozen = 0
+	dic_money = {}
+	dic_frozen = {}
 	list_frozen = []
 	for dic_ele in dic_data[day]:
-		sum_money += dic_ele["money"]
-		sum_frozen += dic_ele["frozen"]
+		str_type = dic_ele["type"]
+		if str_type in dic_money:
+			dic_money[str_type] += dic_ele["money"]
+		else:
+			dic_money[str_type] = dic_ele["money"]
+		if str_type in dic_frozen:
+			dic_frozen[str_type] += dic_ele["frozen"]
+		else:
+			dic_frozen[str_type] = dic_ele["frozen"]
 		if "items" in dic_ele.keys():
-			for dic_frozen in dic_ele["items"]:
-				list_frozen.append(dic_frozen)
+			for dic in dic_ele["items"]:
+				list_frozen.append(dic)
 
-	return sum_money, sum_frozen, list_frozen
+	return dic_money, dic_frozen, list_frozen
 
 if __name__=="__main__":
 	list_date.sort()
 	day_first = list_date[0]
 	day_last = list_date[-1]
 
-	sum_money, sum_frozen, list_frozen = getInfo(day_last)
+	dic_money, dic_frozen, list_frozen = getInfo(day_last)
+	sum_money = 0
+	sum_bank = 0
+	for type in dic_money.keys():
+		sum_money += dic_money[type]
+		if type == "bank":
+			sum_bank += dic_money[type]
+	sum_frozen = 0
+	for type in dic_frozen.keys():
+		sum_frozen += dic_frozen[type]
+	
 
 	while True:
 		os.system("cls")
@@ -75,7 +93,13 @@ if __name__=="__main__":
 		print("Date\t%4d-%2d-%2d" %(day_last / 10000, day_last % 10000 / 100, day_last % 100))
 
 		if day_last > day_first:
-			sum_first_money = getInfo(day_first)[0]
+			dic_first_money = getInfo(day_first)[0]
+			sum_first_money = 0
+			sum_first_bank = 0
+			for type in dic_first_money.keys():
+				sum_first_money += dic_first_money[type]
+				if type == "bank":
+					sum_first_bank += dic_first_money[type]
 			delta =  (sum_money - sum_first_money) / sum_money * 100
 			if delta > 0:
 				print("Total\t%s won (▲%.2f%%)" % ( format(sum_money, ","), delta ))
@@ -91,6 +115,22 @@ if __name__=="__main__":
 		
 		else:
 			print("Avail\t%s won (%.2f%%)" % ( format(sum_money - sum_frozen, ","), (sum_money - sum_frozen) / sum_money * 100) )
+			print()
+			delta_bank = (sum_bank - sum_first_bank) / sum_bank * 100
+			if delta_bank < 0:
+				print("Bank\t▼%.2f%%" % delta_bank)
+			elif delta_bank == 0:
+				print("Bank\t-%.2f%%" % delta_bank)
+			else:
+				print("Bank\t▲%.2f%%" % delta_bank)
+			delta_other = ((sum_money - sum_bank) - (sum_first_money - sum_first_bank)) / (sum_money - sum_bank) * 100
+			if delta_other < 0:
+				print("Other\t▼%.2f%%" % delta_other)
+			elif delta_other == 0:	
+				print("Other\t-%.2f%%" % delta_other)
+			else:
+				print("Other\t▲%.2f%%" % delta_other)
+				
 			print("-" * 30)
 			print("Frozen list ▼")
 			for dic_frozen in list_frozen:
