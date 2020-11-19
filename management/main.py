@@ -157,7 +157,11 @@ if __name__=="__main__":
 			list_y = []
 			for date in list_date:
 				list_x.append(date % 10000)
-				list_y.append(getInfo(date)[0])
+				dic = getInfo(date)[0]
+				sum_money = 0
+				for type in dic.keys():
+					sum_money += dic[type]
+				list_y.append(sum_money)
 			plt.plot(list_x, list_y)
 			plt.show()
 		
