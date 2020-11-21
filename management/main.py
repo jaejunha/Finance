@@ -1,7 +1,10 @@
 import os
+import sys
 import matplotlib.pyplot as plt
 
 from datetime import datetime
+
+UNIT_MILLION = 1000000
 
 def initializeData():
 	list_date = []
@@ -71,6 +74,34 @@ def getInfo(day):
 				list_frozen.append(dic)
 
 	return dic_money, dic_frozen, list_frozen
+
+def showHistory(list_date):
+	list_x = []
+	list_money = []
+	list_frozen = []
+		
+	for date in list_date:
+		list_x.append(date % 10000)
+		dic_money, dic_frozen, list_temp = getInfo(date)
+
+		sum_money = 0
+		for type in dic_money.keys():
+			sum_money += dic_money[type]
+		list_money.append(sum_money / UNIT_MILLION)
+
+		sum_frozen = 0
+		for type in dic_frozen.keys():
+			sum_frozen += dic_frozen[type]
+		list_frozen.append(sum_frozen / UNIT_MILLION)
+
+	max_money = max(list_money)
+	plt.ylim([0, max_money * 1.2])
+	plt.plot(list_x, list_money, label = "Collected")
+	plt.plot(list_x, list_frozen, label = "Frozen")
+	plt.xlabel('Date')
+	plt.ylabel('Money [Million]')
+	plt.legend(loc = "best")
+	plt.show()
 
 if __name__=="__main__":
 	
@@ -163,15 +194,7 @@ if __name__=="__main__":
 			except ValueError:
 				print("Please enter the correct number")
 		if select == 1:
-			list_x = []
-			list_y = []
-			for date in list_date:
-				list_x.append(date % 10000)
-				dic = getInfo(date)[0]
-				sum_money = 0
-				for type in dic.keys():
-					sum_money += dic[type]
-				list_y.append(sum_money)
-			plt.plot(list_x, list_y)
-			plt.show()
+			showHistory(list_date)
+		elif select == 9:
+			sys.exit()
 		
