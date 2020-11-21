@@ -3,51 +3,54 @@ import matplotlib.pyplot as plt
 
 from datetime import datetime
 
-list_date = []
-dic_data = {}
-try:
-	file = open("../_data/account.dat", "r", encoding = "UTF8")
-	for line in file.readlines():
-		list_ele = line.split("/")
-		int_date = int(list_ele[0])
-		list_date.append(int_date)
-		dic_data[int_date] = []
+def initializeData():
+	list_date = []
+	dic_data = {}
+	try:
+		file = open("../_data/account.dat", "r", encoding = "UTF8")
+		for line in file.readlines():
+			list_ele = line.split("/")
+			int_date = int(list_ele[0])
+			list_date.append(int_date)
+			dic_data[int_date] = []
 
-		len_ele = len(list_ele)
-		for i in range(1, len_ele):
-			raw_name_type = list_ele[i].split(":")[0].split("-")
-			str_name = raw_name_type[0]
-			str_type = raw_name_type[1]
-			raw_frozen_money_item = list_ele[i].split(":")[1]
-			if "{" in raw_frozen_money_item:
-				raw_frozen_money = raw_frozen_money_item.split("{")[0].split(",")
-				raw_list_item = raw_frozen_money_item.split("{")[1][:-1].split("-")
+			len_ele = len(list_ele)
+			for i in range(1, len_ele):
+				raw_name_type = list_ele[i].split(":")[0].split("-")
+				str_name = raw_name_type[0]
+				str_type = raw_name_type[1]
+				raw_frozen_money_item = list_ele[i].split(":")[1]
+				if "{" in raw_frozen_money_item:
+					raw_frozen_money = raw_frozen_money_item.split("{")[0].split(",")
+					raw_list_item = raw_frozen_money_item.split("{")[1][:-1].split("-")
 
-				list_item = []
-				for raw_item in raw_list_item:
-					raw_item_ele = raw_item.split(",")
-					str_code = raw_item_ele[0]
-					# 위의 str_name과 이름 겹쳐서 str_name -> str_item
-					str_item = raw_item_ele[1]
-					int_frozen = int(raw_item_ele[2])
-					int_unit = int(raw_item_ele[3])
-					list_item.append({"code": str_code, "name": str_item, "frozen": int_frozen, "unit": int_unit})
-				int_frozen = int(raw_frozen_money[0])
-				int_money = int(raw_frozen_money[1])
-				dic_data[int_date].append({"name": str_name, "type": str_type, "frozen": int_frozen, "money": int_money, "items": list_item})
-			else:
-				raw_frozen_money = raw_frozen_money_item.split(",")
-				int_frozen = int(raw_frozen_money[0])
-				int_money = int(raw_frozen_money[1])
-				dic_data[int_date].append({"name": str_name, "type": str_type, "frozen": int_frozen, "money": int_money})
+					list_item = []
+					for raw_item in raw_list_item:
+						raw_item_ele = raw_item.split(",")
+						str_code = raw_item_ele[0]
+						# 위의 str_name과 이름 겹쳐서 str_name -> str_item
+						str_item = raw_item_ele[1]
+						int_frozen = int(raw_item_ele[2])
+						int_unit = int(raw_item_ele[3])
+						list_item.append({"code": str_code, "name": str_item, "frozen": int_frozen, "unit": int_unit})
+					int_frozen = int(raw_frozen_money[0])
+					int_money = int(raw_frozen_money[1])
+					dic_data[int_date].append({"name": str_name, "type": str_type, "frozen": int_frozen, "money": int_money, "items": list_item})
+				else:
+					raw_frozen_money = raw_frozen_money_item.split(",")
+					int_frozen = int(raw_frozen_money[0])
+					int_money = int(raw_frozen_money[1])
+					dic_data[int_date].append({"name": str_name, "type": str_type, "frozen": int_frozen, "money": int_money})
 
-	file.close()
-except FileNotFoundError:
-	file = open("../_data/account.dat", "w", encoding = "UTF8")
-	str_date = datetime.today().strftime("%Y%m%d")
-	file.write(str_date)
-	list_date.append(int(str_date))
-	dic_data[int(str_date)] = []
+		file.close()
+	except FileNotFoundError:
+		file = open("../_data/account.dat", "w", encoding = "UTF8")
+		str_date = datetime.today().strftime("%Y%m%d")
+		file.write(str_date)
+		list_date.append(int(str_date))
+		dic_data[int(str_date)] = []
+
+	return list_date, dic_data
 
 def getInfo(day):
 	dic_money = {}
@@ -70,23 +73,24 @@ def getInfo(day):
 	return dic_money, dic_frozen, list_frozen
 
 if __name__=="__main__":
-	list_date.sort()
-	day_first = list_date[0]
-	day_last = list_date[-1]
-
-	dic_money, dic_frozen, list_frozen = getInfo(day_last)
-	sum_money = 0
-	sum_bank = 0
-	for type in dic_money.keys():
-		sum_money += dic_money[type]
-		if type == "bank":
-			sum_bank += dic_money[type]
-	sum_frozen = 0
-	for type in dic_frozen.keys():
-		sum_frozen += dic_frozen[type]
 	
-
+	list_date, dic_data = initializeData()
 	while True:
+		list_date.sort()
+		day_first = list_date[0]
+		day_last = list_date[-1]
+
+		dic_money, dic_frozen, list_frozen = getInfo(day_last)
+		sum_money = 0
+		sum_bank = 0
+		for type in dic_money.keys():
+			sum_money += dic_money[type]
+			if type == "bank":
+				sum_bank += dic_money[type]
+		sum_frozen = 0
+		for type in dic_frozen.keys():
+			sum_frozen += dic_frozen[type]
+
 		os.system("cls")
 		print("Management program")
 		print("=" * 30)
@@ -140,11 +144,17 @@ if __name__=="__main__":
 		print("Menu")
 		print("=" * 30)
 		print("1. Show History")
-		print("2. Add Account")
-		print("3. Update Account")
-		print("4. Delete Account")
-		print("5. Save Account")
-		print("6. Exit Program")
+		print("-" * 30)
+		print("2. Add new Account type")
+		print("3. Modify Account type")
+		print("4. Delete Account type")
+		print("-" * 30)
+		print("5. Copy Account contents")
+		print("6. Modify Account contents")
+		print("7. Delete Account contents")
+		print("-" * 30)
+		print("8. Save current state")
+		print("9. Exit Program")
 		print("=" * 30)
 		while True:
 			try:
