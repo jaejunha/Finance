@@ -1,6 +1,7 @@
 import os
 import sys
 import copy
+import shutil
 import matplotlib.pyplot as plt
 
 from datetime import datetime
@@ -200,7 +201,7 @@ def copyData(list_date, dic_data):
 	if len(list_date) == 1:
 		print("There is no data to copy")
 		input("Press any key if you go to main menu")
-		return
+		return False
 
 	str_date = datetime.today().strftime("%Y%m%d")
 	int_date = int(str_date)
@@ -208,8 +209,42 @@ def copyData(list_date, dic_data):
 	if (int_date in list_date) is False:
 		list_date.append(int_date)
 		dic_data[int_date] = copy.deepcopy(dic_data[last_date])
-	
-	print("Copy process is finished")
+		print("Copy process is finished")
+		input("Press any key if you go to main menu")
+		return True
+	else:
+		print("Data exists")
+		input("Press any key if you go to main menu")
+		return False
+
+def saveData(list_date, dic_data):
+	str_date = datetime.today().strftime("%Y%m%d")
+	# For backup
+	shutil.copy("../_data/account.dat", "../_data/account_" + str_date + ".dat")
+
+	file = open("../_data/account.dat", "w", encoding = "UTF8")
+	len_date = len(list_date)
+	for i, date in enumerate(list_date):
+		line = "%d/content\n" % date
+
+		line_sub = ""
+		for dic in dic_data[date]:
+			line_sub += "%s-%s:%d,%d" % (dic["name"], dic["type"], dic["frozen"], dic["money"])
+			if "items" in dic.keys():
+				line_sub += "{content}"
+				line_items = ""
+				for item in dic["items"]:
+					line_items += "%s,%s,%d,%d-" % (item["code"], item["name"], item["frozen"], item["unit"])
+				line_items = line_items[:-1]
+				line_sub = line_sub.replace("content", line_items)
+			line_sub += "/"
+		line_sub = line_sub[:-1]
+		line = line.replace("content", line_sub)
+		if i == len_date - 1:
+			line = line[:-1]
+		file.write(line)
+	file.close()
+	print("Save process is finished")
 	input("Press any key if you go to main menu")
 
 if __name__=="__main__":
@@ -227,8 +262,10 @@ if __name__=="__main__":
 		if select == 1:
 			showHistory(list_date)
 		elif select == 5:
-			flag_save = True
-			copyData(list_date, dic_data)
+			flag_save = copyData(list_date, dic_data)
+		elif select == 8:
+			flag_save = False
+			saveData(list_date, dic_data)
 		elif select == 9:
 			sys.exit()
 		
