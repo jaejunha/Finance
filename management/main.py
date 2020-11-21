@@ -95,6 +95,7 @@ def printScreen(list_date, dic_data, flag_save):
 	os.system("cls")
 	print("\x1b[1;37;40m", end = "")
 	print("Management program")
+	print("\x1b[0m", end = "")
 	print("=" * 30)
 	print("Date\t%4d-%2d-%2d" %(day_last / 10000, day_last % 10000 / 100, day_last % 100))
 
@@ -138,12 +139,16 @@ def printScreen(list_date, dic_data, flag_save):
 			print("Other\t▲%.2f%%" % delta_other)
 				
 		print("-" * 30)
+		print("\x1b[2;37;44m", end = "")
 		print("Frozen list ▼")
+		print("\x1b[0m", end = "")
 		for dic_frozen in list_frozen:
 			print(" - %s: %s won" % (dic_frozen["name"], format(dic_frozen["frozen"], ",")))
 	print("=" * 30)
 	print()
+	print("\x1b[1;37;40m", end = "")
 	print("Menu")
+	print("\x1b[0m", end = "")
 	print("=" * 30)
 	print("1. Show History")
 	print("-" * 30)
@@ -154,7 +159,7 @@ def printScreen(list_date, dic_data, flag_save):
 	if flag_save:
 		print("\x1b[1;31;41m", end = "")
 		print("5. Copy all previous contents")
-		print("\x1b[1;37;40m", end = "")
+		print("\x1b[0m", end = "")
 	else:
 		print("5. Copy all previous contents")
 	print("6. Modify Account contents")
