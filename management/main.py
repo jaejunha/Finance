@@ -155,17 +155,16 @@ def printScreen(list_date, dic_data, flag_save):
 	print("2. Add new Account type")
 	print("3. Modify Account type")
 	print("4. Delete Account type")
-	print("-" * 30)
-	if flag_save:
-		print("\x1b[1;31;41m", end = "")
-		print("5. Copy all previous contents")
-		print("\x1b[0m", end = "")
-	else:
-		print("5. Copy all previous contents")
+	print("5. Copy all previous contents")
 	print("6. Modify Account contents")
 	print("7. Delete Account contents")
 	print("-" * 30)
-	print("8. Save current state")
+	if flag_save:
+		print("\x1b[1;31;41m", end = "")
+		print("8. Save current state")
+		print("\x1b[0m", end = "")
+	else:
+		print("8. Save current state")
 	print("9. Exit Program")
 	print("=" * 30)
 
