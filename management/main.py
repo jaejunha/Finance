@@ -1,5 +1,6 @@
 import os
 import sys
+import copy
 import matplotlib.pyplot as plt
 
 from datetime import datetime
@@ -75,7 +76,7 @@ def getInfo(day):
 
 	return dic_money, dic_frozen, list_frozen
 
-def printScreen(list_date, dic_data):
+def printScreen(list_date, dic_data, flag_save):
 	list_date.sort()
 	day_first = list_date[0]
 	day_last = list_date[-1]
@@ -92,6 +93,7 @@ def printScreen(list_date, dic_data):
 		sum_frozen += dic_frozen[type]
 
 	os.system("cls")
+	print("\x1b[1;37;40m", end = "")
 	print("Management program")
 	print("=" * 30)
 	print("Date\t%4d-%2d-%2d" %(day_last / 10000, day_last % 10000 / 100, day_last % 100))
@@ -149,7 +151,12 @@ def printScreen(list_date, dic_data):
 	print("3. Modify Account type")
 	print("4. Delete Account type")
 	print("-" * 30)
-	print("5. Copy Account contents")
+	if flag_save:
+		print("\x1b[1;31;41m", end = "")
+		print("5. Copy all previous contents")
+		print("\x1b[1;37;40m", end = "")
+	else:
+		print("5. Copy all previous contents")
 	print("6. Modify Account contents")
 	print("7. Delete Account contents")
 	print("-" * 30)
@@ -185,11 +192,28 @@ def showHistory(list_date):
 	plt.legend(loc = "best")
 	plt.show()
 
+def copyData(list_date, dic_data):
+	if len(list_date) == 1:
+		print("There is no data to copy")
+		input("Press any key if you go to main menu")
+		return
+
+	str_date = datetime.today().strftime("%Y%m%d")
+	int_date = int(str_date)
+	last_date = list_date[-1]
+	if (int_date in list_date) is False:
+		list_date.append(int_date)
+		dic_data[int_date] = copy.deepcopy(dic_data[last_date])
+	
+	print("Copy process is finished")
+	input("Press any key if you go to main menu")
+
 if __name__=="__main__":
 	
+	flag_save = False
 	list_date, dic_data = initializeData()
 	while True:
-		printScreen(list_date, dic_data)
+		printScreen(list_date, dic_data, flag_save)
 		while True:
 			try:
 				select = int(input("Select > "))
@@ -198,6 +222,9 @@ if __name__=="__main__":
 				print("Please enter the correct number")
 		if select == 1:
 			showHistory(list_date)
+		elif select == 5:
+			flag_save = True
+			copyData(list_date, dic_data)
 		elif select == 9:
 			sys.exit()
 		
