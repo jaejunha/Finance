@@ -75,6 +75,88 @@ def getInfo(day):
 
 	return dic_money, dic_frozen, list_frozen
 
+def printScreen(list_date, dic_data):
+	list_date.sort()
+	day_first = list_date[0]
+	day_last = list_date[-1]
+
+	dic_money, dic_frozen, list_frozen = getInfo(day_last)
+	sum_money = 0
+	sum_bank = 0
+	for type in dic_money.keys():
+		sum_money += dic_money[type]
+		if type == "bank":
+			sum_bank += dic_money[type]
+	sum_frozen = 0
+	for type in dic_frozen.keys():
+		sum_frozen += dic_frozen[type]
+
+	os.system("cls")
+	print("Management program")
+	print("=" * 30)
+	print("Date\t%4d-%2d-%2d" %(day_last / 10000, day_last % 10000 / 100, day_last % 100))
+
+	if day_last > day_first:
+		dic_first_money = getInfo(day_first)[0]
+		sum_first_money = 0
+		sum_first_bank = 0
+		for type in dic_first_money.keys():
+			sum_first_money += dic_first_money[type]
+			if type == "bank":
+				sum_first_bank += dic_first_money[type]
+		delta =  (sum_money - sum_first_money) / sum_money * 100
+		if delta > 0:
+			print("Total\t%s won (▲%.2f%%)" % ( format(sum_money, ","), delta ))
+		elif delta == 0:
+			print("Total\t%s won (-%.2f%%)" % ( format(sum_money, ","), 0 ))
+		else:
+			print("Total\t%s won (▼%.2f%%)" % ( format(sum_money, ","), delta ))
+	else:
+		print("Total\t%s won" % format(sum_money, ","))
+		
+	if sum_frozen == 0:
+		print("Avail\t%s won (100.00%%)" % format(sum_money, ","))
+		
+	else:
+		print("Avail\t%s won (%.2f%%)" % ( format(sum_money - sum_frozen, ","), (sum_money - sum_frozen) / sum_money * 100) )
+		print()
+		delta_bank = (sum_bank - sum_first_bank) / sum_bank * 100
+		if delta_bank < 0:
+			print("Bank\t▼%.2f%%" % delta_bank)
+		elif delta_bank == 0:
+			print("Bank\t-%.2f%%" % delta_bank)
+		else:
+			print("Bank\t▲%.2f%%" % delta_bank)
+		delta_other = ((sum_money - sum_bank) - (sum_first_money - sum_first_bank)) / (sum_money - sum_bank) * 100
+		if delta_other < 0:
+			print("Other\t▼%.2f%%" % delta_other)
+		elif delta_other == 0:	
+			print("Other\t-%.2f%%" % delta_other)
+		else:
+			print("Other\t▲%.2f%%" % delta_other)
+				
+		print("-" * 30)
+		print("Frozen list ▼")
+		for dic_frozen in list_frozen:
+			print(" - %s: %s won" % (dic_frozen["name"], format(dic_frozen["frozen"], ",")))
+	print("=" * 30)
+	print()
+	print("Menu")
+	print("=" * 30)
+	print("1. Show History")
+	print("-" * 30)
+	print("2. Add new Account type")
+	print("3. Modify Account type")
+	print("4. Delete Account type")
+	print("-" * 30)
+	print("5. Copy Account contents")
+	print("6. Modify Account contents")
+	print("7. Delete Account contents")
+	print("-" * 30)
+	print("8. Save current state")
+	print("9. Exit Program")
+	print("=" * 30)
+
 def showHistory(list_date):
 	list_x = []
 	list_money = []
@@ -107,86 +189,7 @@ if __name__=="__main__":
 	
 	list_date, dic_data = initializeData()
 	while True:
-		list_date.sort()
-		day_first = list_date[0]
-		day_last = list_date[-1]
-
-		dic_money, dic_frozen, list_frozen = getInfo(day_last)
-		sum_money = 0
-		sum_bank = 0
-		for type in dic_money.keys():
-			sum_money += dic_money[type]
-			if type == "bank":
-				sum_bank += dic_money[type]
-		sum_frozen = 0
-		for type in dic_frozen.keys():
-			sum_frozen += dic_frozen[type]
-
-		os.system("cls")
-		print("Management program")
-		print("=" * 30)
-		print("Date\t%4d-%2d-%2d" %(day_last / 10000, day_last % 10000 / 100, day_last % 100))
-
-		if day_last > day_first:
-			dic_first_money = getInfo(day_first)[0]
-			sum_first_money = 0
-			sum_first_bank = 0
-			for type in dic_first_money.keys():
-				sum_first_money += dic_first_money[type]
-				if type == "bank":
-					sum_first_bank += dic_first_money[type]
-			delta =  (sum_money - sum_first_money) / sum_money * 100
-			if delta > 0:
-				print("Total\t%s won (▲%.2f%%)" % ( format(sum_money, ","), delta ))
-			elif delta == 0:
-				print("Total\t%s won (-%.2f%%)" % ( format(sum_money, ","), 0 ))
-			else:
-				print("Total\t%s won (▼%.2f%%)" % ( format(sum_money, ","), delta ))
-		else:
-			print("Total\t%s won" % format(sum_money, ","))
-		
-		if sum_frozen == 0:
-			print("Avail\t%s won (100.00%%)" % format(sum_money, ","))
-		
-		else:
-			print("Avail\t%s won (%.2f%%)" % ( format(sum_money - sum_frozen, ","), (sum_money - sum_frozen) / sum_money * 100) )
-			print()
-			delta_bank = (sum_bank - sum_first_bank) / sum_bank * 100
-			if delta_bank < 0:
-				print("Bank\t▼%.2f%%" % delta_bank)
-			elif delta_bank == 0:
-				print("Bank\t-%.2f%%" % delta_bank)
-			else:
-				print("Bank\t▲%.2f%%" % delta_bank)
-			delta_other = ((sum_money - sum_bank) - (sum_first_money - sum_first_bank)) / (sum_money - sum_bank) * 100
-			if delta_other < 0:
-				print("Other\t▼%.2f%%" % delta_other)
-			elif delta_other == 0:	
-				print("Other\t-%.2f%%" % delta_other)
-			else:
-				print("Other\t▲%.2f%%" % delta_other)
-				
-			print("-" * 30)
-			print("Frozen list ▼")
-			for dic_frozen in list_frozen:
-				print(" - %s: %s won" % (dic_frozen["name"], format(dic_frozen["frozen"], ",")))
-		print("=" * 30)
-		print()
-		print("Menu")
-		print("=" * 30)
-		print("1. Show History")
-		print("-" * 30)
-		print("2. Add new Account type")
-		print("3. Modify Account type")
-		print("4. Delete Account type")
-		print("-" * 30)
-		print("5. Copy Account contents")
-		print("6. Modify Account contents")
-		print("7. Delete Account contents")
-		print("-" * 30)
-		print("8. Save current state")
-		print("9. Exit Program")
-		print("=" * 30)
+		printScreen(list_date, dic_data)
 		while True:
 			try:
 				select = int(input("Select > "))
