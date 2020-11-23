@@ -43,6 +43,10 @@ class myHandler(BaseHTTPRequestHandler):
 		self.send_response(200)
 		self.send_header("Content-type", "text/html")
 		self.end_headers()
+		
+		if url is "favicon.ico":
+			return
+
 		if url in dic_item.keys():
 			for i, ele in enumerate(list_sum):
 				if ele[1] == url:
@@ -69,12 +73,12 @@ class myHandler(BaseHTTPRequestHandler):
 
 			self.wfile.write("<tr>".encode("euc-kr"))
 			
-			self.wfile.write("<td>".encode("euc-kr"))
+			self.wfile.write('<td width="200">'.encode("euc-kr"))
 			str = "시가총액\t%s 억원" % format(dic_item[url]["sum"], ",")
 			self.wfile.write(str.encode("euc-kr"))
 			self.wfile.write("</td>".encode("euc-kr"))
 			
-			self.wfile.write("<td>".encode("euc-kr"))
+			self.wfile.write('<td width="200">'.encode("euc-kr"))
 			str = "(%d위, 상위 %.2f%%)" % (rank_sum, (rank_sum / len_total) * 100)
 			self.wfile.write(str.encode("euc-kr"))
 			self.wfile.write("</td>".encode("euc-kr"))
@@ -241,6 +245,8 @@ class myHandler(BaseHTTPRequestHandler):
 
 			self.wfile.write("</tr>".encode("euc-kr"))
 			self.wfile.write("</table>".encode("euc-kr"))
+		else:
+			self.wfile.write("NOT FOUND".encode("euc-kr"))
 		return
 
 def getBlackList():
