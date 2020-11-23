@@ -67,22 +67,57 @@ class myHandler(BaseHTTPRequestHandler):
 			self.wfile.write(("<h2>" + url + "</h2>").encode("euc-kr"))
 			self.wfile.write("<table>".encode("euc-kr"))
 
-			str = "시가총액\t%s 억원 (%d위, 상위 %.2f%%)<br>" % (format(dic_item[url]["sum"], ","), rank_sum, (rank_sum / len_total) * 100)
-
 			self.wfile.write("<tr>".encode("euc-kr"))
+			
+			self.wfile.write("<td>".encode("euc-kr"))
+			str = "시가총액\t%s 억원" % format(dic_item[url]["sum"], ",")
 			self.wfile.write(str.encode("euc-kr"))
+			self.wfile.write("</td>".encode("euc-kr"))
+			
+			self.wfile.write("<td>".encode("euc-kr"))
+			str = "(%d위, 상위 %.2f%%)" % (rank_sum, (rank_sum / len_total) * 100)
+			self.wfile.write(str.encode("euc-kr"))
+			self.wfile.write("</td>".encode("euc-kr"))
+			self.wfile.write("</tr>".encode("euc-kr"))
+			
+			self.wfile.write("<td>".encode("euc-kr"))
+			self.wfile.write("".encode("euc-kr"))
+			self.wfile.write("</td>".encode("euc-kr"))
+			
 			self.wfile.write("</tr>".encode("euc-kr"))
 
+			self.wfile.write("<tr>".encode("euc-kr"))
 			if rank_sum > rank_profit:
 				self.wfile.write("<td>".encode("euc-kr"))
-				str = "영업이익\t%s 억원 (%d위, 상위 %.2f%%) [시가총액 %d위: %s]<br>" % (format(dic_item[url]["profit"], ","), rank_profit, (rank_profit / len_total) * 100, rank_profit, list_sum[rank_profit - 1][1])
+				str = "영업이익\t%s 억원" % format(dic_item[url]["profit"], ",")
+				self.wfile.write(str.encode("euc-kr"))
+				self.wfile.write("</td>".encode("euc-kr"))
+				
+				self.wfile.write("<td>".encode("euc-kr"))
+				str = "(%d위, 상위 %.2f%%)" % (rank_profit, (rank_profit / len_total) * 100)
+				self.wfile.write(str.encode("euc-kr"))
+				self.wfile.write("</td>".encode("euc-kr"))
+				
+				self.wfile.write("<td>".encode("euc-kr"))
+				str = "[시가총액 %d위: %s]" % (rank_profit, list_sum[rank_profit - 1][1])
 				self.wfile.write(str.encode("euc-kr"))
 				self.wfile.write("</td>".encode("euc-kr"))
 			else:
-				str = "영업이익\t%s 억원 (%d위, 상위 %.2f%%)<br>" % (format(dic_item[url]["profit"], ","), rank_profit, (rank_profit / len_total) * 100)
+				self.wfile.write("<td>".encode("euc-kr"))
+				str = "영업이익\t%s 억원" % format(dic_item[url]["profit"], ",")
+				self.wfile.write(str.encode("euc-kr"))
+				self.wfile.write("</td>".encode("euc-kr"))
+				
+				self.wfile.write("<td>".encode("euc-kr"))
+				str = "(%d위, 상위 %.2f%%)" % (rank_profit, (rank_profit / len_total) * 100)
+				self.wfile.write(str.encode("euc-kr"))
+				self.wfile.write("</td>".encode("euc-kr"))
+				
+				self.wfile.write("<td>".encode("euc-kr"))
+				str = ""
+				self.wfile.write(str.encode("euc-kr"))
+				self.wfile.write("</td>".encode("euc-kr"))
 
-			self.wfile.write("<tr>".encode("euc-kr"))
-			self.wfile.write(str.encode("euc-kr"))
 			self.wfile.write("</tr>".encode("euc-kr"))
 
 			if rank_sum > rank_roe:
