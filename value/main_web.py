@@ -85,8 +85,8 @@ class myHandler(BaseHTTPRequestHandler):
 			self.wfile.write("</td>".encode("euc-kr"))
 			
 			self.wfile.write("</tr>".encode("euc-kr"))
-
 			self.wfile.write("<tr>".encode("euc-kr"))
+			
 			if rank_sum > rank_profit:
 				self.wfile.write("<td>".encode("euc-kr"))
 				str = "영업이익\t%s 억원" % format(dic_item[url]["profit"], ",")
@@ -119,38 +119,126 @@ class myHandler(BaseHTTPRequestHandler):
 				self.wfile.write("</td>".encode("euc-kr"))
 
 			self.wfile.write("</tr>".encode("euc-kr"))
+			self.wfile.write("<tr>".encode("euc-kr"))
 
 			if rank_sum > rank_roe:
-				str = "ROE\t\t%f (%d위, 상위 %.2f%%) [시가총액 %d위: %s]<br>" % (dic_item[url]["roe"], rank_roe, (rank_roe / len_total) * 100, rank_roe, list_sum[rank_roe - 1][1])
+				self.wfile.write("<td>".encode("euc-kr"))
+				str = "ROE\t\t%f" % dic_item[url]["roe"]
+				self.wfile.write(str.encode("euc-kr"))
+				self.wfile.write("</td>".encode("euc-kr"))
+				
+				self.wfile.write("<td>".encode("euc-kr"))
+				str = "(%d위, 상위 %.2f%%)" % (rank_roe, (rank_roe / len_total) * 100)
+				self.wfile.write(str.encode("euc-kr"))
+				self.wfile.write("</td>".encode("euc-kr"))
+				
+				self.wfile.write("<td>".encode("euc-kr"))
+				str = "[시가총액 %d위: %s]" % (rank_roe, list_sum[rank_roe - 1][1])
+				self.wfile.write(str.encode("euc-kr"))
+				self.wfile.write("</td>".encode("euc-kr"))
 			else:
-				str = "ROE\t\t%f (%d위, 상위 %.2f%%)<br>" % (dic_item[url]["roe"], rank_roe,(rank_roe / len_total) * 100)
+				
+				self.wfile.write("<td>".encode("euc-kr"))
+				str = "ROE\t\t%f" % dic_item[url]["roe"]
+				self.wfile.write(str.encode("euc-kr"))
+				self.wfile.write("</td>".encode("euc-kr"))
+				
+				self.wfile.write("<td>".encode("euc-kr"))
+				str = "(%d위, 상위 %.2f%%)" % (rank_roe, (rank_roe / len_total) * 100)
+				self.wfile.write(str.encode("euc-kr"))
+				self.wfile.write("</td>".encode("euc-kr"))
+				
+				self.wfile.write("<td>".encode("euc-kr"))
+				str = ""
+				self.wfile.write(str.encode("euc-kr"))
+				self.wfile.write("</td>".encode("euc-kr"))
 
-			self.wfile.write("<tr>".encode("euc-kr"))
-			self.wfile.write(str.encode("euc-kr"))
 			self.wfile.write("</tr>".encode("euc-kr"))
+			self.wfile.write("<tr>".encode("euc-kr"))
 			
 			if rank_sum > rank_per:
-				str = "PER\t\t%f (%d위, 상위 %.2f%%) [시가총액 %d위: %s]<br>" % (dic_item[url]["per"], rank_per, (rank_per / len_total) * 100, rank_per, list_sum[rank_per - 1][1])
+				self.wfile.write("<td>".encode("euc-kr"))
+				str = "PER\t\t%f" % dic_item[url]["per"]
+				self.wfile.write(str.encode("euc-kr"))
+				self.wfile.write("</td>".encode("euc-kr"))
+				
+				self.wfile.write("<td>".encode("euc-kr"))
+				str = "(%d위, 상위 %.2f%%)" % (rank_per, (rank_per / len_total) * 100)
+				self.wfile.write(str.encode("euc-kr"))
+				self.wfile.write("</td>".encode("euc-kr"))
+				
+				self.wfile.write("<td>".encode("euc-kr"))
+				str = "[시가총액 %d위: %s]" % (rank_per, list_sum[rank_per - 1][1])
+				self.wfile.write(str.encode("euc-kr"))
+				self.wfile.write("</td>".encode("euc-kr"))
 			else:
-				str = "PER\t\t%f (%d위, 상위 %.2f%%)<br>" % (dic_item[url]["per"], rank_per, (rank_per / len_total) * 100)
+				self.wfile.write("<td>".encode("euc-kr"))
+				str = "PER\t\t%f" % dic_item[url]["per"]
+				self.wfile.write(str.encode("euc-kr"))
+				self.wfile.write("</td>".encode("euc-kr"))
+				
+				self.wfile.write("<td>".encode("euc-kr"))
+				str = "(%d위, 상위 %.2f%%)" % (rank_per, (rank_per / len_total) * 100)
+				self.wfile.write(str.encode("euc-kr"))
+				self.wfile.write("</td>".encode("euc-kr"))
+				
+				self.wfile.write("<td>".encode("euc-kr"))
+				str = ""
+				self.wfile.write(str.encode("euc-kr"))
+				self.wfile.write("</td>".encode("euc-kr"))
 
-			self.wfile.write("<tr>".encode("euc-kr"))
-			self.wfile.write(str.encode("euc-kr"))
 			self.wfile.write("</tr>".encode("euc-kr"))
+			self.wfile.write("<tr>".encode("euc-kr"))
 
 			if rank_sum > rank_pbr:
-				str = "PBR\t\t%f (%d위, 상위 %.2f%%) [시가총액 %d위: %s]<br>" % (dic_item[url]["pbr"], rank_pbr, (rank_pbr / len_total) * 100, rank_pbr, list_sum[rank_pbr - 1][1])
+				self.wfile.write("<td>".encode("euc-kr"))
+				str = "PBR\t\t%f" % dic_item[url]["pbr"]
+				self.wfile.write(str.encode("euc-kr"))
+				self.wfile.write("</td>".encode("euc-kr"))
+				
+				self.wfile.write("<td>".encode("euc-kr"))
+				str = "(%d위, 상위 %.2f%%)" % (rank_pbr, (rank_pbr / len_total) * 100)
+				self.wfile.write(str.encode("euc-kr"))
+				self.wfile.write("</td>".encode("euc-kr"))
+				
+				self.wfile.write("<td>".encode("euc-kr"))
+				str = "[시가총액 %d위: %s]" % (rank_pbr, list_sum[rank_pbr - 1][1])
+				self.wfile.write(str.encode("euc-kr"))
+				self.wfile.write("</td>".encode("euc-kr"))
 			else:
-				str = "PBR\t\t%f (%d위, 상위 %.2f%%)<br>" % (dic_item[url]["pbr"], rank_pbr, (rank_pbr / len_total) * 100)
+				self.wfile.write("<td>".encode("euc-kr"))
+				str = "PBR\t\t%f" % dic_item[url]["pbr"]
+				self.wfile.write(str.encode("euc-kr"))
+				self.wfile.write("</td>".encode("euc-kr"))
+				
+				self.wfile.write("<td>".encode("euc-kr"))
+				str = "(%d위, 상위 %.2f%%)" % (rank_pbr, (rank_pbr / len_total) * 100)
+				self.wfile.write(str.encode("euc-kr"))
+				self.wfile.write("</td>".encode("euc-kr"))
+				
+				self.wfile.write("<td>".encode("euc-kr"))
+				str = ""
+				self.wfile.write(str.encode("euc-kr"))
+				self.wfile.write("</td>".encode("euc-kr"))
 
-			self.wfile.write("<tr>".encode("euc-kr"))
-			self.wfile.write(str.encode("euc-kr"))
 			self.wfile.write("</tr>".encode("euc-kr"))
-
-			str = "부채총액\t%s 억원 (%d위, 상위 %.2f%%) [은행/증권은 특성상 부채가 높음]<br>" % (format(dic_item[url]["dept"], ","), rank_dept, (rank_dept / len_total) * 100)
-
 			self.wfile.write("<tr>".encode("euc-kr"))
+
+			self.wfile.write("<td>".encode("euc-kr"))
+			str = "부채총액\t%s 억원" % format(dic_item[url]["dept"], ",")
 			self.wfile.write(str.encode("euc-kr"))
+			self.wfile.write("</td>".encode("euc-kr"))
+				
+			self.wfile.write("<td>".encode("euc-kr"))
+			str = "(%d위, 상위 %.2f%%)" % (rank_dept, (rank_dept / len_total) * 100)
+			self.wfile.write(str.encode("euc-kr"))
+			self.wfile.write("</td>".encode("euc-kr"))
+				
+			self.wfile.write("<td>".encode("euc-kr"))
+			str = "[은행/증권은 특성상 부채가 높음]"
+			self.wfile.write(str.encode("euc-kr"))
+			self.wfile.write("</td>".encode("euc-kr"))
+
 			self.wfile.write("</tr>".encode("euc-kr"))
 			self.wfile.write("</table>".encode("euc-kr"))
 		return
