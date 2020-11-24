@@ -33,6 +33,7 @@ list_roe = []
 list_pbr_p = []
 list_pbr_m = []
 dic_item = {}
+dic_code = {}
 
 class myHandler(BaseHTTPRequestHandler):
 	def do_GET(self):
@@ -47,7 +48,9 @@ class myHandler(BaseHTTPRequestHandler):
 		if url is "favicon.ico":
 			return
 
-		if url in dic_item.keys():
+		if url in dic_item.keys() or url in dic_code.keys():
+			if url in dic_code.keys():
+				url = dic_code[url]
 			for i, ele in enumerate(list_sum):
 				if ele[1] == url:
 					rank_sum = i + 1
@@ -68,6 +71,7 @@ class myHandler(BaseHTTPRequestHandler):
 					rank_pbr = i + 1
 
 			self.wfile.write(('<h1 style="color:red;">하지만 지금 지수 높아서 매수는 자제</h1>').encode("euc-kr"))
+			self.wfile.write("재무제표 전년 12월 기준, 현재 재무제표 확인하기!".encode("euc-kr"))
 			self.wfile.write(("<h2>" + url + "</h2>").encode("euc-kr"))
 			self.wfile.write("<table>".encode("euc-kr"))
 
@@ -357,7 +361,7 @@ if __name__ == "__main__":
 		file_day.close()
 
 
-	global list_sum, list_dept, list_profit, list_per_p, list_per_m, list_roe, list_pbr_p, list_pbr_m, dic_item
+	global list_sum, list_dept, list_profit, list_per_p, list_per_m, list_roe, list_pbr_p, list_pbr_m, dic_item, dic_code
 	file_day = open("../_data/" + str_date + ".txt", "r")
 	for i, line in enumerate(file_day.readlines()):
 		if i == 0:
@@ -365,6 +369,7 @@ if __name__ == "__main__":
 		list_line = line.split(",")
 		code = list_line[0].strip()
 		name = list_line[1].strip()
+		dic_code[code] = name
 		sum = int(list_line[2].strip())
 		dept = int(list_line[3].strip())
 		profit = int(list_line[4].strip())
