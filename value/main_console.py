@@ -140,6 +140,7 @@ if __name__ == "__main__":
 	list_pbr_p = []
 	list_pbr_m = []
 	dic_item = {}
+	dic_code = {}
 	file_day = open("../_data/" + str_date + ".txt", "r")
 	for i, line in enumerate(file_day.readlines()):
 		if i == 0:
@@ -147,6 +148,7 @@ if __name__ == "__main__":
 		list_line = line.split(",")
 		code = list_line[0].strip()
 		name = list_line[1].strip()
+		dic_code[code] = name
 		sum = int(list_line[2].strip())
 		dept = int(list_line[3].strip())
 		profit = int(list_line[4].strip())
@@ -188,7 +190,9 @@ if __name__ == "__main__":
 
 	while True:
 		x = input("종목 이름 입력 (종료는 X입력)> ")
-		if x in dic_item.keys():
+		if x in dic_item.keys() or x in dic_code.keys():
+			if x in dic_code.keys():
+				x = dic_code[x]
 			for i, ele in enumerate(list_sum):
 				if ele[1] == x:
 					rank_sum = i + 1
