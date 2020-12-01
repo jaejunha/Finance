@@ -179,7 +179,7 @@ def showHistory(list_date):
 	list_frozen = []
 		
 	for date in list_date:
-		list_x.append(date % 10000)
+		list_x.append(str(date % 10000))
 		dic_money, dic_frozen, list_temp = getInfo(date)
 
 		sum_money = 0
@@ -193,9 +193,11 @@ def showHistory(list_date):
 		list_frozen.append(sum_frozen / UNIT_MILLION)
 
 	max_money = max(list_money)
+	fig, ax = plt.subplots()
+	ax.plot_date(list_x, list_money, marker='.', linestyle='-', label = "Collected")
+	ax.plot_date(list_x, list_frozen, marker='.', linestyle='-', label = "Frozen")
+	fig.autofmt_xdate()
 	plt.ylim([0, max_money * 1.2])
-	plt.plot(list_x, list_money, label = "Collected")
-	plt.plot(list_x, list_frozen, label = "Frozen")
 	plt.xlabel('Date')
 	plt.ylabel('Money [Million]')
 	plt.legend(loc = "best")
