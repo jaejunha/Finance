@@ -55,7 +55,15 @@ def initializeData():
 		list_date.append(int(str_date))
 		dic_data[int(str_date)] = []
 
-	return list_date, dic_data
+	try:
+		file = open("../_data/base.dat", "r", encoding = "UTF8")
+		date_base = int(file.readlines()[0])
+		print(date_base)
+		file.close()
+	except FileNotFoundError:
+		date_base = list_date[0]
+
+	return list_date, dic_data, date_base
 
 def getInfo(day):
 	dic_money = {}
@@ -77,9 +85,8 @@ def getInfo(day):
 
 	return dic_money, dic_frozen, list_frozen
 
-def printScreen(list_date, dic_data, flag_save):
+def printScreen(list_date, dic_data, day_base, flag_save):
 	list_date.sort()
-	day_first = list_date[0]
 	day_last = list_date[-1]
 
 	dic_money, dic_frozen, list_frozen = getInfo(day_last)
@@ -98,17 +105,17 @@ def printScreen(list_date, dic_data, flag_save):
 	print("Management program")
 	print("\x1b[0m", end = "")
 	print("=" * 30)
-	print("Date\t%4d-%2d-%2d" %(day_last / 10000, day_last % 10000 / 100, day_last % 100))
+	print("Date\t%4d-%02d-%02d (base: %4d-%02d-%02d)" %(day_last / 10000, day_last % 10000 / 100, day_last % 100, day_base / 10000, day_base % 10000 / 100, day_base % 100))
 
-	if day_last > day_first:
-		dic_first_money = getInfo(day_first)[0]
-		sum_first_money = 0
-		sum_first_bank = 0
-		for type in dic_first_money.keys():
-			sum_first_money += dic_first_money[type]
+	if day_last > day_base:
+		dic_base_money = getInfo(day_base)[0]
+		sum_base_money = 0
+		sum_base_bank = 0
+		for type in dic_base_money.keys():
+			sum_base_money += dic_base_money[type]
 			if type == "bank":
-				sum_first_bank += dic_first_money[type]
-		delta =  (sum_money - sum_first_money) / sum_money * 100
+				sum_base_bank += dic_base_money[type]
+		delta =  (sum_money - sum_base_money) / sum_money * 100
 		if delta > 0:
 			print("Total\t%s won (▲%.2f%%)" % ( format(sum_money, ","), delta ))
 		elif delta == 0:
@@ -124,14 +131,14 @@ def printScreen(list_date, dic_data, flag_save):
 	else:
 		print("Avail\t%s won (%.2f%%)" % ( format(sum_money - sum_frozen, ","), (sum_money - sum_frozen) / sum_money * 100) )
 		print()
-		delta_bank = (sum_bank - sum_first_bank) / sum_bank * 100
+		delta_bank = (sum_bank - sum_base_bank) / sum_bank * 100
 		if delta_bank < 0:
 			print("Bank\t▼%.2f%%" % delta_bank)
 		elif delta_bank == 0:
 			print("Bank\t-%.2f%%" % delta_bank)
 		else:
 			print("Bank\t▲%.2f%%" % delta_bank)
-		delta_other = ((sum_money - sum_bank) - (sum_first_money - sum_first_bank)) / (sum_money - sum_bank) * 100
+		delta_other = ((sum_money - sum_bank) - (sum_base_money - sum_base_bank)) / (sum_money - sum_bank) * 100
 		if delta_other < 0:
 			print("Other\t▼%.2f%%" % delta_other)
 		elif delta_other == 0:	
@@ -151,27 +158,45 @@ def printScreen(list_date, dic_data, flag_save):
 	print("Menu")
 	print("\x1b[0m", end = "")
 	print("=" * 30)
-	print("1. Show History")
+	print(" 1. Set Base date")
+	print(" 2. Show History")
 	print("-" * 30)
 	print("\x1b[30m", end = "")
-	print("2. Add new Account type")
-	print("3. Modify Account type")
-	print("4. Delete Account type")
+	print(" 3. Add new Account type")
+	print(" 4. Modify Account type")
+	print(" 5. Delete Account type")
 	print("\x1b[0m", end = "")
-	print("5. Copy all previous contents")
+	print(" 6. Copy all previous contents")
 	print("\x1b[30m", end = "")
-	print("6. Modify Account contents")
-	print("7. Delete Account contents")
+	print(" 7. Modify Account contents")
+	print(" 8. Delete Account contents")
 	print("\x1b[0m", end = "")
 	print("-" * 30)
 	if flag_save:
 		print("\x1b[1;31;41m", end = "")
-		print("8. Save current state")
+		print(" 9. Save current state")
 		print("\x1b[0m", end = "")
 	else:
-		print("8. Save current state")
-	print("9. Exit Program")
+		print(" 9. Save current state")
+	print("10. Exit Program")
 	print("=" * 30)
+
+def enterBaseDate(date_base):
+	while True:
+		try:
+			temp_base = int(input("Base date (ex: " + str(date_base) + ") > "))
+			if temp_base in list_date:
+				date_base = temp_base
+				break
+			else:
+				print("Please enter the correct date")
+		except ValueError:
+			print("Please enter the correct date")
+
+	print("Base date is changed")
+	input("Press any key if you go to main menu")
+
+	return date_base
 
 def showHistory(list_date):
 	list_x = []
@@ -223,7 +248,7 @@ def copyData(list_date, dic_data):
 		input("Press any key if you go to main menu")
 		return False
 
-def saveData(list_date, dic_data):
+def saveData(list_date, dic_data, date_base):
 	str_date = datetime.today().strftime("%Y%m%d")
 	# For backup
 	shutil.copy("../_data/account.dat", "../_data/account_" + str_date + ".dat")
@@ -250,15 +275,20 @@ def saveData(list_date, dic_data):
 			line = line[:-1]
 		file.write(line)
 	file.close()
+
+	file = open("../_data/base.dat", "w", encoding = "UTF8")
+	file.write("%d" % date_base)
+	file.close()
+
 	print("Save process is finished")
 	input("Press any key if you go to main menu")
 
 if __name__=="__main__":
 	
 	flag_save = False
-	list_date, dic_data = initializeData()
+	list_date, dic_data, date_base = initializeData()
 	while True:
-		printScreen(list_date, dic_data, flag_save)
+		printScreen(list_date, dic_data, date_base, flag_save)
 		while True:
 			try:
 				select = int(input("Select > "))
@@ -266,12 +296,15 @@ if __name__=="__main__":
 			except ValueError:
 				print("Please enter the correct number")
 		if select == 1:
+			flag_save = True
+			date_base = enterBaseDate(date_base)
+		elif select == 2:
 			showHistory(list_date)
-		elif select == 5:
+		elif select == 6:
 			flag_save = copyData(list_date, dic_data)
-		elif select == 8:
-			flag_save = False
-			saveData(list_date, dic_data)
 		elif select == 9:
+			flag_save = False
+			saveData(list_date, dic_data, date_base)
+		elif select == 10:
 			sys.exit()
 		
