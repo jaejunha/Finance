@@ -142,6 +142,7 @@ class HandlerHTTP(BaseHTTPRequestHandler):
             length = int(self.headers['Content-length'])
             raw_input = self.rfile.read(length).decode("utf-8")
             list_input = raw_input.split("&")
+            print(list_account)
             if (list_account[0][0] == list_input[0].split("=")[1]) and (list_account[0][1] == list_input[1].split("=")[1]):
                 self._redirect("home")
                 list_visit.append(self.client_address[0])
@@ -191,7 +192,6 @@ if __name__ == "__main__":
             id = line.split(",")[0].strip()
             pwd = line.split(",")[1].strip()
             list_account.append( (id, pwd) )
-
 
     server_http = HTTPServer(("", port), HandlerHTTP)
     server_http.serve_forever()
