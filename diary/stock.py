@@ -20,6 +20,9 @@ def writeObject(res):
 				
 def writeHTML(res):
     list_date = []
+    list_sum = []
+    key_date = None
+    kdx = -1
     file = open(res.path, "r", encoding = "utf-8")
     for line in file.readlines():
         if line.strip().startswith(":)") and line.strip().endswith("&") :
@@ -44,22 +47,30 @@ def writeHTML(res):
             content += "<tr>"
             content += "<td>날짜</td><td>이름</td><td>매수타점(상승일대비)</td><td>매수타점(연속하락)</td><td>수익률</td><td>비고</td>"
             content += "<tr>"
+
             for i, line_i in enumerate(list_file_line):
                 if i == len_file_line - 1:
                     continue
                 content += "<tr>"
+
                 list_line_i = line_i.split(",")
                 date = int(list_line_i[0].strip())
-                list_date.append(date)
+                if date != key_date:
+                    kdx += 1
+                    key_date = date
+                    list_date.append(key_date)
+                    list_sum.append(0)
                 name = list_line_i[1].strip()
                 amount = int(list_line_i[6].strip())
                 profit = int(list_line_i[7].strip())
                 buy_percent = 100 * (float(list_line_i[4].strip()) - float(list_line_i[2].strip())) / float(list_line_i[2])
                 buy_count = int(list_line_i[3].strip())
                 etc = list_line_i[8].strip()
+
                 content += "<td>%s</td><td>%s</td><td>%.2f%%</td><td>%d</td><td>%+.2f%%</td><td>%s</td>" % (date, name, buy_percent, buy_count, float(profit) / amount * 100, etc)
                 
                 sum_profit += profit
+                list_sum[kdx] += profit
                 sum_percent += buy_percent
                 sum_count += buy_count
                 total += 1
@@ -70,37 +81,37 @@ def writeHTML(res):
             content += "<br>"
             content += "평균 매수타점 상승일대비 %+.2f%% 연속 %d일 하락<br>" % (sum_percent / len_file_line, sum_count / len_file_line)
             content += "<br>"
-            content += "승률 %.2f%% ( %d 승 / %d 전 )<br>" % (win / total * 100, win, total)
+            content += "<hr>"
+            content += "<br>"
+            content += "<table width='100%'>"
+            content += "<tr><td>날짜</td><td>실현손익</td></tr>"
+            for i, date in enumerate(list_date):
+                content += "<tr><td>%d</td><td>%s</td></tr>" % (date, list_sum[i])
+            content += "</table>"
+            content += "<br>"
             content += "총 실현손익 %s<br>" % format(sum_profit, ",")
+            content += "<br>"
+            content += "<hr>"
+            content += "<br>"
+            content += "승률 %.2f%% ( %d 승 / %d 전 )<br>" % (win / total * 100, win, total)
+
             content += "</div>"
             content += "<br>"
 
             content += "<script>"
-            key = None
-            kdx = 0
-            for date in list_date:
-                if key == date:
-                    continue
-                else:
-                    key = date
-                    content += "arr_date[%d] = new Array();" % kdx
-                    idx = 0
-                    for file in sorted(os.listdir("record")):
-                        if file.startswith(str(key)):
-                            content += "arr_date[%d][%d] = '%s';" % (kdx, idx, file)
-                            idx += 1
-                    kdx += 1
+            for i, date in enumerate(list_date):
+                content += "arr_date[%d] = new Array();" % i
+                idx = 0
+                for file_name in sorted(os.listdir("record")):
+                    if file_name.startswith(str(date)):
+                        content += "arr_date[%d][%d] = '%s';" % (i, idx, file_name)
+                        idx += 1
             content += "</script>"
 
             content += "<select id='date' onchange='change()'>"
-            key = None
             for date in list_date:
-                if key == date:
-                    continue
-                else:
-                    key = date
-                    content += "<option value='%d'>%d</option>" % (key, key)
-            content += "</select>"
+                content += "<option value='%d'>%d</option>" % (date, date)
+            content += "</select><br>"
             content += "<br>"
             content += "<div id='record'></div>"
             content += "<script> function change(){"
@@ -110,9 +121,7 @@ def writeHTML(res):
             content += "str += '<img width=\"300px\" src=\"record/' + arr_date[idx][i] + '\"/>';}"
             content += "$('#record').html(str);"
             content += "}change();</script>"
-
-
-
+            
             line = line.replace(line[start: end + 1], content)
         res.wfile.write(line.encode())
 
@@ -143,6 +152,7 @@ class HandlerHTTP(BaseHTTPRequestHandler):
             raw_input = self.rfile.read(length).decode("utf-8")
             list_input = raw_input.split("&")
             find = False
+
             for account in list_account:
                 if (account[0] == list_input[0].split("=")[1]) and (account[1] == list_input[1].split("=")[1]):
                     self._redirect("home")

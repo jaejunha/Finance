@@ -1,11 +1,57 @@
 <meta charset="utf-8">
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>	    
-	<script>
-		arr_date = new Array();
-	</script>
-	<html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>	    
+<script>
+	arr_date = new Array();
+</script>
+<style>
+	.number { width: 5ch; }
+</style>
+<html>
 스윙 목적으로 매매한 종목만 기록함...<br>
-기본 손익절 컷: +/- 5%<br>
+<br>
+<hr>
+<img src="rule.jpg"/>
+<br>
+<hr>
+<br>
+트레이딩 계산기<br>
+<input name="simple" type="radio" value="s" checked="checked">단리
+<input name="simple" type="radio" value="c">복리
+<br>
+매매횟수:&nbsp;<input id="count" class="number" maxlength="4" value="10">&nbsp;회&nbsp;분할횟수:&nbsp;<input id="divide" class="number" maxlength="3" value="10">&nbsp;회
+<br>
+승률:&nbsp;<input id="probability" class="number" maxlength="3" value="60">&nbsp;%
+<br>
+익절컷:&nbsp;<input id="win" class="number" value="4.7">&nbsp;%&nbsp;손절컷:&nbsp;<input id="loss" class="number" value="-4.7">&nbsp;%
+<br>
+<br>
+<div id="result">결과</div>
+<script>
+	var count, divide, probability, win, loss, ret;
+
+	function cal(){
+		if (document.getElementById("count").value != null)
+			count = Number(document.getElementById("count").value);
+		if (document.getElementById("divide").value != null)
+			divide = Number(document.getElementById("divide").value);
+		if (document.getElementById("probability").value != null)
+			probability = Number(document.getElementById("probability").value);
+		if (document.getElementById("win").value != null)
+			win = Number(document.getElementById("win").value);
+		if (document.getElementById("loss").value != null)
+			loss = Number(document.getElementById("loss").value);
+	
+		if (document.querySelector('input[name="simple"]:checked').value == "s")
+			ret = (probability / 100.0 * (win - 0.3) / divide + (100 - probability) / 100.0 * (loss - 0.3) / divide) * divide * count;
+		else
+			ret = (Math.pow( Math.pow( 1 + (win - 0.3) / 100.0 / divide, probability / 100.0 ) * Math.pow( 1 + (loss - 0.3) / 100.0 / divide, (100 - probability) / 100.0 ), divide * count) - 1) * 100.0;
+		document.getElementById("result").innerText = "결과(총 " + count * divide + "회 매매): " + ret + " %";
+	}
+	setInterval("cal()", 1000);
+
+</script>
+<br>
+<hr>
 <br>
 :)statistics&
-	</html>
+</html>
