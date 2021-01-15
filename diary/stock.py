@@ -142,12 +142,17 @@ class HandlerHTTP(BaseHTTPRequestHandler):
             length = int(self.headers['Content-length'])
             raw_input = self.rfile.read(length).decode("utf-8")
             list_input = raw_input.split("&")
-            print(list_account)
-            if (list_account[0][0] == list_input[0].split("=")[1]) and (list_account[0][1] == list_input[1].split("=")[1]):
-                self._redirect("home")
-                list_visit.append(self.client_address[0])
-            else:
+            find = False
+            for account in list_account:
+                if (account[0] == list_input[0].split("=")[1]) and (account[1] == list_input[1].split("=")[1]):
+                    self._redirect("home")
+                    list_visit.append(self.client_address[0])
+                    find = True
+                    break
+            
+            if find == False:
                 self._redirect("/")
+
     def do_GET(self):
         print(self.path)
 
