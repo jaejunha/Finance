@@ -1,57 +1,163 @@
 <meta charset="utf-8">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>	    
-<script>
-	arr_date = new Array();
-</script>
-<style>
-	.number { width: 5ch; }
-</style>
+<head>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>	    
+	<script>
+		arr_date = new Array();
+	</script>
+	<style>
+		html, body{
+			margin: 0;
+			overflow: hidden;
+			background: #eee;
+		}
+		header {
+			height: 50px;
+			line-height: 50px;
+			vertical-align: middle;
+			background: #fff;
+			moz-box-shadow: 0 2px 2px rgba(108, 108, 108, 0.3);
+			-webkit-box-shadow: 0 2px 2px rgba(108, 108, 108, 0.3);
+			box-shadow: 0 2px 2px rgba(108, 108, 108, 0.3);
+			text-align: center;
+			font-size: 20pt;
+		}
+		main {
+			position: absolute;
+			left: 20px;
+			top: 60px;
+			width: calc(100% - 360px);
+			height: 100%;
+			overflow-y: auto;
+			background: #fff;
+		}
+		side {
+			position: absolute;
+			top: 60px;
+			right: 20px;
+			width: 300px;
+		}
+		side #calculator { 
+			margin-top: 10px; 
+			padding: 5px;
+			background: #fff;
+			border: 1px solid #bcbcbc;
+			border-radius: 5px;
+		}
+		side #calculator .number { width: 5ch; }
+		side #calculator #result {
+			margin-top: 10px;
+			padding: 5px;
+			border: 1px solid #bcbcbc;
+			border-radius: 2px;
+		}
+		side #user {
+			margin-top: 10px; 
+			padding: 5px;
+			background: #fff;
+			border: 1px solid #bcbcbc;
+			border-radius: 5px;
+		}
+		side #user span {
+			padding-left: 10px;
+			width: calc(100% - 10px);
+			height: 30px;
+			line-height: 30px;
+			display: inline-block;
+			cursor: pointer;
+		}
+		side #user hr{
+			margin-top: 4px;
+			margin-bottom: 4px;
+		}
+		side #user .dash {
+			border-top: 1px dashed #bcbcbc;
+			border-bottom: 0px dashed #aaa;
+		}
+		side #user .solid {
+			border-top: 1px solid #bcbcbc;
+			border-bottom: 0px solid #aaa;
+		}
+	</style>
+</head>
 <html>
-스윙 목적으로 매매한 종목만 기록함...<br>
-<br>
-<hr>
-<img src="rule.jpg"/>
-<br>
-<hr>
-<br>
-트레이딩 계산기<br>
-<input name="simple" type="radio" value="s" checked="checked">단리
-<input name="simple" type="radio" value="c">복리
-<br>
-매매횟수:&nbsp;<input id="count" class="number" maxlength="4" value="10">&nbsp;회&nbsp;분할횟수:&nbsp;<input id="divide" class="number" maxlength="3" value="10">&nbsp;회
-<br>
-승률:&nbsp;<input id="probability" class="number" maxlength="3" value="60">&nbsp;%
-<br>
-익절컷:&nbsp;<input id="win" class="number" value="4.7">&nbsp;%&nbsp;손절컷:&nbsp;<input id="loss" class="number" value="-4.7">&nbsp;%
-<br>
-<br>
-<div id="result">결과</div>
-<script>
-	var count, divide, probability, win, loss, ret;
+<header><b>복기용 사이트</b></header>
+<main>
+	<div class="tab">
+	스윙 목적으로 매매한 종목만 기록함...<br>
+	<br>
+	<hr>
+	<img src="rule.jpg"/>
+	<br>
+	<hr>
+	<br>
+	:)statistics&
+	</div>
+	<div class="tab">
+	개발 예정
+	</div>
+</main>
+<side>
+	<div id="calculator">
+		<b>트레이딩 계산기</b><br>
+		<br>
+		<input name="simple" type="radio" value="s" checked="checked">단리
+		<input name="simple" type="radio" value="c">복리
+		<br>
+		매매횟수:&nbsp;<input id="count" class="number" maxlength="4" value="10">&nbsp;회&nbsp;분할횟수:&nbsp;<input id="divide" class="number" maxlength="3" value="10">&nbsp;회
+		<br>
+		승률:&nbsp;<input id="probability" class="number" maxlength="3" value="60">&nbsp;%
+		<br>
+		익절컷:&nbsp;<input id="win" class="number" value="4.7">&nbsp;%&nbsp;손절컷:&nbsp;<input id="loss" class="number" value="-4.7">&nbsp;%
+		<br>
+		<div id="result">결과</div>
+		<script>
+			var count, divide, probability, win, loss, ret;
 
-	function cal(){
-		if (document.getElementById("count").value != null)
-			count = Number(document.getElementById("count").value);
-		if (document.getElementById("divide").value != null)
-			divide = Number(document.getElementById("divide").value);
-		if (document.getElementById("probability").value != null)
-			probability = Number(document.getElementById("probability").value);
-		if (document.getElementById("win").value != null)
-			win = Number(document.getElementById("win").value);
-		if (document.getElementById("loss").value != null)
-			loss = Number(document.getElementById("loss").value);
+			function cal(){
+				if (document.getElementById("count").value != null)
+					count = Number(document.getElementById("count").value);
+				if (document.getElementById("divide").value != null)
+					divide = Number(document.getElementById("divide").value);
+				if (document.getElementById("probability").value != null)
+					probability = Number(document.getElementById("probability").value);
+				if (document.getElementById("win").value != null)
+					win = Number(document.getElementById("win").value);
+				if (document.getElementById("loss").value != null)
+					loss = Number(document.getElementById("loss").value);
 	
-		if (document.querySelector('input[name="simple"]:checked').value == "s")
-			ret = (probability / 100.0 * (win - 0.3) / divide + (100 - probability) / 100.0 * (loss - 0.3) / divide) * divide * count;
-		else
-			ret = (Math.pow( Math.pow( 1 + (win - 0.3) / 100.0 / divide, probability / 100.0 ) * Math.pow( 1 + (loss - 0.3) / 100.0 / divide, (100 - probability) / 100.0 ), divide * count) - 1) * 100.0;
-		document.getElementById("result").innerText = "결과(총 " + count * divide + "회 매매): " + ret + " %";
-	}
-	setInterval("cal()", 1000);
-
-</script>
-<br>
-<hr>
-<br>
-:)statistics&
+				if (document.querySelector('input[name="simple"]:checked').value == "s")
+					ret = (probability / 100.0 * (win - 0.3) / divide + (100 - probability) / 100.0 * (loss - 0.3) / divide) * divide * count;
+				else
+					ret = (Math.pow( Math.pow( 1 + (win - 0.3) / 100.0 / divide, probability / 100.0 ) * Math.pow( 1 + (loss - 0.3) / 100.0 / divide, (100 - probability) / 100.0 ), divide * count) - 1) * 100.0;
+				document.getElementById("result").innerText = "결과(총 " + count * divide + "회 매매): " + ret + " %";
+			}
+			setInterval("cal()", 1000);
+		</script>
+	</div>
+	<div id="user">
+		<b>사용자</b>
+		<hr class="solid">
+		<span onclick="change(1)">Dreamline91</span>
+		<hr class="dash">
+		<span onclick="change(2)">Other user</span>
+	</div>
+	<script>
+		function change(n){
+			var tab = document.getElementsByClassName("tab");
+			var select = document.querySelectorAll("#user span");
+			
+			for (var i = 0; i < tab.length; ++i){
+				if (i == n - 1){
+					tab[i].style.display = "block";
+					select[i].style.background = "#dedede";
+				}
+				else{
+					tab[i].style.display = "none";
+					select[i].style.background = "#fff";
+				}
+			}
+		}
+		change(1);
+	</script>
+</side>
 </html>
