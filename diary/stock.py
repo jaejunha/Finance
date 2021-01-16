@@ -5,7 +5,8 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 CONST_8KB = 8192
 
 list_visit = []
-list_account = []
+dic_ip = {}
+dic_account = {}
 
 def writeObject(res):
 	file = open(res.path, "rb")
@@ -25,7 +26,7 @@ def writeHTML(res):
     kdx = -1
     file = open(res.path, "r", encoding = "utf-8")
     for line in file.readlines():
-        if line.strip().startswith(":)") and line.strip().endswith("&") :
+        if line.strip().startswith(":)statistics&"):
             start = line.find(":)")
             end = line.find("&")
 
@@ -123,6 +124,33 @@ def writeHTML(res):
             content += "}change();</script>"
             
             line = line.replace(line[start: end + 1], content)
+
+        if line.strip().startswith(":)user&"):
+            start = line.find(":)")
+            end = line.find("&")
+
+            content = ""
+
+            for id in dic_account.keys():
+                if dic_account[id]["ath"] == 0:
+                    continue
+                else:
+                    if dic_account[id]["ath"] == 1:
+                        content += '<hr class="solid">'
+                    else:
+                        content += '<hr class="dash">'
+                    content += '<span onclick="change(%d)">%s</span>' % (dic_account[id]["ath"], id)
+
+            line = line.replace(line[start: end + 1], content)
+
+        if line.strip().startswith(":)change&"):
+            start = line.find(":)")
+            end = line.find("&")
+
+            content = "change(%d);" % dic_account[dic_ip[res.client_address[0]]]["ath"]
+
+            line = line.replace(line[start: end + 1], content)
+
         res.wfile.write(line.encode())
 
     file.close()
@@ -153,10 +181,11 @@ class HandlerHTTP(BaseHTTPRequestHandler):
             list_input = raw_input.split("&")
             find = False
 
-            for account in list_account:
-                if (account[0] == list_input[0].split("=")[1]) and (account[1] == list_input[1].split("=")[1]):
+            for id in dic_account.keys():
+                if (id == list_input[0].split("=")[1]) and (dic_account[id]["pwd"] == list_input[1].split("=")[1]):
                     self._redirect("home")
                     list_visit.append(self.client_address[0])
+                    dic_ip[self.client_address[0]] = id
                     find = True
                     break
             
@@ -206,9 +235,11 @@ if __name__ == "__main__":
     file = open("account.csv", "r")
     for line in file.readlines():
         if len(line.strip()) > 0:
-            id = line.split(",")[0].strip()
-            pwd = line.split(",")[1].strip()
-            list_account.append( (id, pwd) )
+            list_line = line.split(",")
+            id = list_line[0].strip()
+            pwd = list_line[1].strip()
+            ath = int(list_line[2].strip())
+            dic_account[id] = {"pwd": pwd, "ath": ath}
 
     server_http = HTTPServer(("", port), HandlerHTTP)
     server_http.serve_forever()
