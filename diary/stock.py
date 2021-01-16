@@ -109,19 +109,19 @@ def writeHTML(res):
                         idx += 1
             content += "</script>"
 
-            content += "<select id='date' onchange='change()'>"
+            content += "<select id='date' onchange='select()'>"
             for date in list_date:
                 content += "<option value='%d'>%d</option>" % (date, date)
             content += "</select><br>"
             content += "<br>"
             content += "<div id='record'></div>"
-            content += "<script> function change(){"
+            content += "<script> function select(){"
             content += "var idx = $('#date option').index($('#date option:selected'));"
             content += "var str = '';"
             content += "for (var i = 0; i < arr_date[idx].length; ++i){"
             content += "str += '<img width=\"300px\" src=\"record/' + arr_date[idx][i] + '\"/>';}"
             content += "$('#record').html(str);"
-            content += "}change();</script>"
+            content += "}select();</script>"
             
             line = line.replace(line[start: end + 1], content)
 
