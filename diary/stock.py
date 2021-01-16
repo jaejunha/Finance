@@ -199,7 +199,9 @@ class HandlerHTTP(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":	
 
-    port = 7777 
+
+    file = open("port.csv", "r")
+    port = int(file.readlines()[0].strip())
 
     file = open("account.csv", "r")
     for line in file.readlines():
