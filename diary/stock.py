@@ -1,12 +1,23 @@
 import os
 import sys
+import requests
+import re
 from http.server import HTTPServer, BaseHTTPRequestHandler
+
+URL_FINANCE = "https://finance.naver.com"
+URL_SUM = URL_FINANCE + "/sise/sise_market_sum.nhn"
+URL_SUM_SET = URL_FINANCE + "/sise/field_submit.nhn?menu=market_sum&returnUrl=http%3A%2F%2Ffinance.naver.com%2Fsise%2Fsise_market_sum.nhn"
+
+CONST_KOSPI = 0
+CONST_KOSDAQ = 1
 
 CONST_8KB = 8192
 
 list_visit = []
 dic_ip = {}
 dic_account = {}
+
+list_item = []
 
 def writeObject(res):
 	file = open(res.path, "rb")
@@ -151,6 +162,17 @@ def writeHTML(res):
 
             line = line.replace(line[start: end + 1], content)
 
+        if line.strip().startswith(":)items&"):
+            start = line.find(":)")
+            end = line.find("&")
+
+            content = ""
+
+            for item in list_item:
+                content += '<option value="%s">' % item
+
+            line = line.replace(line[start: end + 1], content)
+
         res.wfile.write(line.encode())
 
     file.close()
@@ -226,8 +248,50 @@ class HandlerHTTP(BaseHTTPRequestHandler):
         except Exception as e:
             print(e)
 
-if __name__ == "__main__":	
+def getLastPage(sosok):
+	url = "%s?sosok=%d" % (URL_SUM, sosok)
+	
+	res = requests.get(url)
+	list_line = res.text.split("\n")
+	for line in list_line:
+		if "맨뒤" in line:
+			return int(re.findall("\d\d", line)[0])
 
+def getHTML(sosok, page):
+	url = "%s?sosok=%d%%26page%%3D%d" % (URL_SUM_SET, sosok, page)
+	url += "&fieldIds=market_sum"
+	url += "&fieldIds=debt_total"
+	url += "&fieldIds=operating_profit"
+	url += "&fieldIds=per"
+	url += "&fieldIds=roe"
+	url += "&fieldIds=pbr"
+
+	res = requests.get(url)
+	return res.text.split("\t")
+
+def getItems(list_line):
+	for i, line in enumerate(list_line):
+		if "/item/main.nhn?code=" in list_line[i]:
+			code = re.findall('=[^"]+', list_line[i])[0][1:]
+			name = re.findall('">.+</a>', list_line[i])[0][2: -4]
+
+			list_item.append(name)
+
+
+def downloadItem():
+    print("Download item")
+
+    for page in range(1, getLastPage(CONST_KOSPI) + 1):
+        list_line = getHTML(CONST_KOSPI, page)
+        getItems(list_line)
+
+    for page in range(1, getLastPage(CONST_KOSDAQ) + 1):
+        list_line = getHTML(CONST_KOSDAQ, page)
+        getItems(list_line)
+
+    print("Download is finished")
+
+if __name__ == "__main__":	
 
     file = open("port.csv", "r")
     port = int(file.readlines()[0].strip())
@@ -240,6 +304,8 @@ if __name__ == "__main__":
             pwd = list_line[1].strip()
             ath = int(list_line[2].strip())
             dic_account[id] = {"pwd": pwd, "ath": ath}
+
+    downloadItem()
 
     server_http = HTTPServer(("", port), HandlerHTTP)
     server_http.serve_forever()
