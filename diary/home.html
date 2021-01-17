@@ -1,5 +1,6 @@
 <meta charset="utf-8">
 <head>
+	<script src="js/calculator.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>	    
 	<script>
 		arr_date = new Array();
@@ -94,13 +95,20 @@
 	</div>
 	<div class="tab">
 		<div>
-			<span>종목</span>
+			<span>날짜</span>&nbsp;
+			<input>년&nbsp;<input>월&nbsp;<input>일
+		</div>
+		<div>
+			<span>종목</span>&nbsp;
 			<input list="item">
 			<datalist id="item">
 				:)items&
 			</datalist>
 		</div>
-	개발 예정
+		<div>
+			<span>매수</span>&nbsp;
+			<input>
+		</div>
 	</div>
 </main>
 <side>
@@ -117,29 +125,6 @@
 		익절컷:&nbsp;<input id="win" class="number" value="4.7">&nbsp;%&nbsp;손절컷:&nbsp;<input id="loss" class="number" value="-4.7">&nbsp;%
 		<br>
 		<div id="result">결과</div>
-		<script>
-			var count, divide, probability, win, loss, ret;
-
-			function cal(){
-				if (document.getElementById("count").value != null)
-					count = Number(document.getElementById("count").value);
-				if (document.getElementById("divide").value != null)
-					divide = Number(document.getElementById("divide").value);
-				if (document.getElementById("probability").value != null)
-					probability = Number(document.getElementById("probability").value);
-				if (document.getElementById("win").value != null)
-					win = Number(document.getElementById("win").value);
-				if (document.getElementById("loss").value != null)
-					loss = Number(document.getElementById("loss").value);
-	
-				if (document.querySelector('input[name="simple"]:checked').value == "s")
-					ret = (probability / 100.0 * (win - 0.3) / divide + (100 - probability) / 100.0 * (loss - 0.3) / divide) * divide * count;
-				else
-					ret = (Math.pow( Math.pow( 1 + (win - 0.3) / 100.0 / divide, probability / 100.0 ) * Math.pow( 1 + (loss - 0.3) / 100.0 / divide, (100 - probability) / 100.0 ), divide * count) - 1) * 100.0;
-				document.getElementById("result").innerText = "결과(총 " + count * divide + "회 매매): " + ret + " %";
-			}
-			setInterval("cal()", 1000);
-		</script>
 	</div>
 	<div id="user">
 		<b>사용자</b>
