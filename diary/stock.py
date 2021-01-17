@@ -42,8 +42,12 @@ def writeHTML(res):
             end = line.find("&")
 
             content = "<div>"
-            sum_profit = 0
-            sum_percent = 0
+            sum_result = 0
+            sum_gain = 0
+            sum_loss = 0
+            sum_amount_gain = 0
+            sum_amount_loss = 0
+            sum_buy_percent = 0
             sum_count = 0
             total = 0
             win = 0
@@ -57,13 +61,12 @@ def writeHTML(res):
                 del list_file_line[0]
                 len_file_line -= 1
             content += "<tr>"
-            content += "<td>날짜</td><td>이름</td><td>매수타점(상승일대비)</td><td>매수타점(연속하락)</td><td>수익률</td><td>비고</td>"
+            content += "<td>날짜</td><td>이름</td><td>매수타점(상승일대비)</td><td>매수타점(연속하락)</td><td>수익률</td><td>전량</td><td>비고</td>"
             content += "<tr>"
 
             for i, line_i in enumerate(list_file_line):
                 if i == len_file_line - 1:
                     continue
-                content += "<tr>"
 
                 list_line_i = line_i.split(",")
                 date = int(list_line_i[0].strip())
@@ -74,24 +77,34 @@ def writeHTML(res):
                     list_sum.append(0)
                 name = list_line_i[1].strip()
                 amount = int(list_line_i[6].strip())
-                profit = int(list_line_i[7].strip())
+                result = int(list_line_i[7].strip())
                 buy_percent = 100 * (float(list_line_i[4].strip()) - float(list_line_i[2].strip())) / float(list_line_i[2])
                 buy_count = int(list_line_i[3].strip())
-                etc = list_line_i[8].strip()
+                all = list_line_i[8].strip()
+                etc = list_line_i[9].strip()
 
-                content += "<td>%s</td><td>%s</td><td>%.2f%%</td><td>%d</td><td>%+.2f%%</td><td>%s</td>" % (date, name, buy_percent, buy_count, float(profit) / amount * 100, etc)
-                
-                sum_profit += profit
-                list_sum[kdx] += profit
-                sum_percent += buy_percent
+                if result > 0:
+                    content += "<tr style='background:#fcc;'>"
+                else:
+                    content += "<tr style='background:#ccf;'>"
+                content += "<td>%s</td><td>%s</td><td>%.2f%%</td><td>%d</td><td>%+.2f%%</td><td>%s</td><td>%s</td>" % (date, name, buy_percent, buy_count, float(result) / amount * 100, all, etc)
+            
+                sum_result += result
+                list_sum[kdx] += result
+                sum_buy_percent += buy_percent
                 sum_count += buy_count
                 total += 1
-                if profit > 0:
+                if result > 0:
+                    sum_gain += result
+                    sum_amount_gain += amount
                     win += 1
+                else:
+                    sum_loss += result
+                    sum_amount_loss += amount
                 content += "</tr>"
             content += "</table>"
             content += "<br>"
-            content += "평균 매수타점 상승일대비 %+.2f%% 연속 %d일 하락<br>" % (sum_percent / len_file_line, sum_count / len_file_line)
+            content += "평균 매수타점 상승일대비 %+.2f%% 연속 %d일 하락<br>" % (sum_buy_percent / len_file_line, sum_count / len_file_line)
             content += "<br>"
             content += "<hr>"
             content += "<br>"
@@ -101,12 +114,13 @@ def writeHTML(res):
                 content += "<tr><td>%d</td><td>%s</td></tr>" % (date, list_sum[i])
             content += "</table>"
             content += "<br>"
-            content += "총 실현손익 %s<br>" % format(sum_profit, ",")
+            content += "총 실현손익 %s<br>" % format(sum_result, ",")
             content += "<br>"
             content += "<hr>"
             content += "<br>"
             content += "승률 %.2f%% ( %d 승 / %d 전 )<br>" % (win / total * 100, win, total)
-
+            content += "평균 익절 %+.2f%%<br>" % (sum_gain / sum_amount_gain * 100.0)
+            content += "평균 손절 %+.2f%%<br>" % (sum_loss / sum_amount_loss * 100.0)
             content += "</div>"
             content += "<br>"
 
