@@ -31,11 +31,9 @@ function setDay(){
 
 	$("#day option").remove();
 	for (var i = 1; i <= last_day; ++i){
-		week = new Date(year, month, i).getDay();
+		week = new Date(year, month - 1, i).getDay();
 		if (week == 0 || week == 6)
 			continue;
 		sel_day.append("<option value='" + i + "'>" + i + "</option>");
 	}
 }
-
-
