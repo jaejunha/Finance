@@ -158,15 +158,19 @@ def writeHTML(res):
 
             content = ""
 
-            for id in dic_account.keys():
-                if dic_account[id]["ath"] == 0:
-                    continue
-                else:
-                    if dic_account[id]["ath"] == 1:
-                        content += '<hr class="solid">'
+            if dic_account[dic_ip[res.client_address[0]]]["ath"] == 0:
+                content += '<hr class="solid">'
+                content += '<span onclick="change(1)">dreamline91</span>'
+            else:
+                for id in dic_account.keys():
+                    if dic_account[id]["ath"] == 0:
+                        continue
                     else:
-                        content += '<hr class="dash">'
-                    content += '<span onclick="change(%d)">%s</span>' % (dic_account[id]["ath"], id)
+                        if dic_account[id]["ath"] == 1:
+                            content += '<hr class="solid">'
+                        else:
+                            content += '<hr class="dash">'
+                        content += '<span onclick="change(%d)">%s</span>' % (dic_account[id]["ath"], id)
 
             line = line.replace(line[start: end + 1], content)
 
@@ -174,7 +178,11 @@ def writeHTML(res):
             start = line.find(":)")
             end = line.find("&")
 
-            content = "change(%d);" % dic_account[dic_ip[res.client_address[0]]]["ath"]
+            auth = dic_account[dic_ip[res.client_address[0]]]["ath"]
+            if auth == 0:
+                content += "change(1);"
+            else:
+                content = "change(%d);" % auth
 
             line = line.replace(line[start: end + 1], content)
 
