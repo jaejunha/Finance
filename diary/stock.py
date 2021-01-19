@@ -2,6 +2,7 @@ import os
 import sys
 import requests
 import re
+from datetime import date
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 URL_FINANCE = "https://finance.naver.com"
@@ -109,18 +110,19 @@ def writeHTML(res):
             content += "<hr>"
             content += "<br>"
             content += "<table width='100%'>"
-            content += "<tr><td>날짜</td><td>실현손익</td></tr>"
+            content += "<tr><td>날짜</td><td>실현손익(전에 물린 손절 제외)</td></tr>"
             for i, date in enumerate(list_date):
                 content += "<tr><td>%d</td><td>%s</td></tr>" % (date, list_sum[i])
             content += "</table>"
             content += "<br>"
-            content += "총 실현손익 %s<br>" % format(sum_result, ",")
+            content += "총 실현손익(전에 물린 손절 제외) %s<br>" % format(sum_result, ",")
             content += "<br>"
             content += "<hr>"
             content += "<br>"
             content += "승률 %.2f%% ( %d 승 / %d 전 )<br>" % (win / total * 100, win, total)
-            content += "평균 익절 %+.2f%%<br>" % (sum_gain / sum_amount_gain * 100.0)
-            content += "평균 손절 %+.2f%%<br>" % (sum_loss / sum_amount_loss * 100.0)
+            content += "실질 승률 %.2f%%<br>" % (sum_amount_gain / (sum_amount_gain + sum_amount_loss) * 100.0)
+            content += "평균 익절(세금 + 수수료 고려) %+.2f%%<br>" % (sum_gain / sum_amount_gain * 100.0)
+            content += "평균 손절(세금 + 수수료 고려) %+.2f%%<br>" % (sum_loss / sum_amount_loss * 100.0)
             content += "</div>"
             content += "<br>"
 
@@ -293,7 +295,27 @@ def getItems(list_line):
 
 
 def downloadItem():
-    print("Download item")
+    today = date.today()
+    str_today = today.strftime("%y%m%d")
+    try:
+        file = open("item.csv", "r")
+        list_line = file.readlines()
+        if str_today == list_line[0].strip():
+            for i, line in enumerate(list_line):
+                if i == 0:
+                    continue
+
+                list_item.append(line.strip())
+            print("Already item codes are updated")
+            return
+
+    except FileNotFoundError:
+        pass
+       
+    file = open("item.csv", "w")
+    file.write(str_today + "\n")
+
+    print("Download items")
 
     for page in range(1, getLastPage(CONST_KOSPI) + 1):
         list_line = getHTML(CONST_KOSPI, page)
@@ -302,6 +324,9 @@ def downloadItem():
     for page in range(1, getLastPage(CONST_KOSDAQ) + 1):
         list_line = getHTML(CONST_KOSDAQ, page)
         getItems(list_line)
+
+    for item in list_item:
+        file.write(item + "\n")
 
     print("Download is finished")
 
