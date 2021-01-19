@@ -237,6 +237,15 @@ class HandlerHTTP(BaseHTTPRequestHandler):
         if self.path == "/":
             access = True
             self.path = "login.html"
+        elif self.path == "/logout":
+            access = True
+
+            for i, ip in enumerate(list_visit[:]):
+                if ip == self.client_address[0]:
+                    del list_visit[i]
+                    break
+
+            self.path = "login.html"
         elif self.path == "/home":
             access = True
             if self.client_address[0] in list_visit:
