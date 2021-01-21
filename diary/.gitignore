@@ -3,5 +3,6 @@ account.csv
 port.csv
 item.csv
 record/*
+data/*
 nohup.out
 

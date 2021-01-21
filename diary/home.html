@@ -102,25 +102,27 @@
 	<br>
 	</div>
 	<div class="tab">
-		<div>
-			<span>날짜</span>&nbsp;
-			<select id="year" onclick="setDay()"></select>&nbsp;년&nbsp;
-			<select id="month" onclick="setDay()"></select>&nbsp;월&nbsp;
-			<select id="day"></select>&nbsp;일
-			<script src="js/calendar.js"></script>
-		</div>
-		<div>
-			<span>종목</span>&nbsp;
-			<input list="item">
-			<datalist id="item">
-				:)items&
-			</datalist>
-		</div>
-		<div>
-			<span>매수</span>&nbsp;
-			<input>&nbsp;원
-		</div>
-		<input type="submit" value="추가하기"></input>
+		<form method="post" action="add">
+			<div>
+				<span>날짜</span>&nbsp;
+				<select id="year" onclick="setDay()"></select>&nbsp;년&nbsp;
+				<select id="month" onclick="setDay()"></select>&nbsp;월&nbsp;
+				<select id="day"></select>&nbsp;일
+				<script src="js/calendar.js"></script>
+			</div>
+			<div>
+				<span>종목</span>&nbsp;
+				<input list="item">
+				<datalist id="item">
+					:)items&
+				</datalist>
+			</div>
+			<div>
+				<span>매수</span>&nbsp;
+				<input>&nbsp;원
+			</div>
+			<input type="submit" value="추가하기"></input>
+		</form>
 	</div>
 </main>
 <side>

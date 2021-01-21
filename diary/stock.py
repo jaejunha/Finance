@@ -32,10 +32,8 @@ def writeObject(res):
 	file.close()
 				
 def writeHTML(res):
-    list_date = []
-    list_sum = []
+    dic_day = {}
     key_date = None
-    kdx = -1
     file = open(res.path, "r", encoding = "utf-8")
     for line in file.readlines():
         if line.strip().startswith(":)statistics&"):
@@ -72,10 +70,12 @@ def writeHTML(res):
                 list_line_i = line_i.split(",")
                 date = int(list_line_i[0].strip())
                 if date != key_date:
-                    kdx += 1
                     key_date = date
-                    list_date.append(key_date)
-                    list_sum.append(0)
+                    dic_day[date] = {}
+                    dic_day[date]["profit"] = 0
+                    dic_day[date]["count"] = 0
+                    dic_day[date]["buy_percent"] = 0
+                    dic_day[date]["buy_count"] = 0
                 name = list_line_i[1].strip()
                 amount = int(list_line_i[6].strip())
                 result = int(list_line_i[7].strip())
@@ -91,7 +91,10 @@ def writeHTML(res):
                 content += "<td>%s</td><td>%s</td><td>%.2f%%</td><td>%d</td><td>%+.2f%%</td><td>%s</td><td>%s</td>" % (date, name, buy_percent, buy_count, float(result) / amount * 100, all, etc)
             
                 sum_result += result
-                list_sum[kdx] += result
+                dic_day[date]["profit"] += result 
+                dic_day[date]["count"] += 1
+                dic_day[date]["buy_percent"] += buy_percent
+                dic_day[date]["buy_count"] += buy_count
                 sum_buy_percent += buy_percent
                 sum_count += buy_count
                 total += 1
@@ -110,9 +113,9 @@ def writeHTML(res):
             content += "<hr>"
             content += "<br>"
             content += "<table width='100%'>"
-            content += "<tr><td>날짜</td><td>실현손익(전에 물린 손절 제외)</td></tr>"
-            for i, date in enumerate(list_date):
-                content += "<tr><td>%d</td><td>%s</td></tr>" % (date, list_sum[i])
+            content += "<tr><td>날짜</td><td>실현손익(전에 물린 손절 제외)</td><td>매수타점(상승일대비)</td><td>매수타점(연속하락)</td></tr>"
+            for date in dic_day.keys():
+                content += "<tr><td>%d</td><td>%s</td><td>%.2f%%</td><td>%d</td></tr>" % (date, dic_day[date]["profit"], (dic_day[date]["buy_percent"] / dic_day[date]["count"]), (dic_day[date]["buy_count"] / dic_day[date]["count"]))
             content += "</table>"
             content += "<br>"
             content += "총 실현손익(전에 물린 손절 제외) %s<br>" % format(sum_result, ",")
@@ -127,7 +130,7 @@ def writeHTML(res):
             content += "<br>"
 
             content += "<script>"
-            for i, date in enumerate(list_date):
+            for i, date in enumerate(dic_day.keys()):
                 content += "arr_date[%d] = new Array();" % i
                 idx = 0
                 for file_name in sorted(os.listdir("record")):
@@ -137,7 +140,7 @@ def writeHTML(res):
             content += "</script>"
 
             content += "<select id='date' onchange='select()'>"
-            for date in list_date:
+            for date in dic_day.keys():
                 content += "<option value='%d'>%d</option>" % (date, date)
             content += "</select><br>"
             content += "<br>"
@@ -237,6 +240,9 @@ class HandlerHTTP(BaseHTTPRequestHandler):
             
             if find == False:
                 self._redirect("/")
+
+        elif self.path == "/add":
+            self._redirect("home")
 
     def do_GET(self):
         print(self.path)
