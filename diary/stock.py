@@ -355,6 +355,9 @@ def downloadItem():
 
 if __name__ == "__main__":	
 
+    if os.path.isfile("nohup.out"):
+        os.remove("nohup.out")
+
     file = open("port.csv", "r")
     port = int(file.readlines()[0].strip())
 
