@@ -85,6 +85,25 @@
 			border-top: 1px solid #bcbcbc;
 			border-bottom: 0px solid #aaa;
 		}
+		.tab form {
+			width: fit-content;
+			margin: 0 auto;
+			margin-top: 5px;
+			margin-bottom: 5px;
+		}
+		.tab form > div {
+			margin: 0 auto;
+			width: fit-content;
+		}
+		.tab form input[type=submit] {
+			margin-top: 5px;
+			margin-bottom: 5px;
+			width: 100%;
+		}
+		.tab iframe {
+			width: 100%;
+			border-width: 0;
+		}
 	</style>
 </head>
 <html>
@@ -104,6 +123,7 @@
 	<div class="tab">
 		<form method="post" action="add">
 			<div>
+			<div>
 				<span>날짜</span>&nbsp;
 				<select id="year" onclick="setDay()"></select>&nbsp;년&nbsp;
 				<select id="month" onclick="setDay()"></select>&nbsp;월&nbsp;
@@ -121,8 +141,13 @@
 				<span>매수</span>&nbsp;
 				<input>&nbsp;원
 			</div>
-			<input type="submit" value="추가하기"></input>
+			</div>
+			<input type="submit" value="적용하기"></input>
 		</form>
+		<hr>
+		<iframe>
+			hello world!
+		</iframe>
 	</div>
 </main>
 <side>

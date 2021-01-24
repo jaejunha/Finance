@@ -242,6 +242,7 @@ class HandlerHTTP(BaseHTTPRequestHandler):
                 self._redirect("/")
 
         elif self.path == "/add":
+            print(dic_ip[self.client_address[0]])
             self._redirect("home")
 
     def do_GET(self):
