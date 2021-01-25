@@ -2,6 +2,7 @@ import os
 import sys
 import requests
 import re
+import urllib
 from datetime import date
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
@@ -242,7 +243,30 @@ class HandlerHTTP(BaseHTTPRequestHandler):
                 self._redirect("/")
 
         elif self.path == "/add":
-            print(dic_ip[self.client_address[0]])
+            length = int(self.headers['Content-length'])
+            utf8 = self.rfile.read(length).decode("utf-8")
+            utf8_treat = utf8.replace("+", " ")
+            list_input = utf8_treat.split("&")
+            
+            year = int(list_input[0].split("=")[1])
+            month = int(list_input[1].split("=")[1])
+            day = int(list_input[2].split("=")[1])
+            item = urllib.parse.unquote(list_input[3].split("=")[1])
+            try:
+                buy = int(list_input[4].split("=")[1])
+            except:
+                buy = 0
+            try:
+                unit = int(list_input[5].split("=")[1])
+            except:
+                unit = 0
+            
+            id = dic_ip[self.client_address[0]]
+            str_date = "%4d%02d%02d" % (year, month, day)
+            
+            file = open("data/%s/%s.csv" % (id, str_date), "a")
+            file.write("%s, %d, %d\n" % (item, buy, unit))
+
             self._redirect("home")
 
     def do_GET(self):
@@ -370,6 +394,11 @@ if __name__ == "__main__":
             pwd = list_line[1].strip()
             ath = int(list_line[2].strip())
             dic_account[id] = {"pwd": pwd, "ath": ath}
+
+            if os.path.isdir("data/%s" % id) is False:
+                os.chdir("data")
+                os.mkdir(id)
+                os.chdir("..")
 
     downloadItem()
 
