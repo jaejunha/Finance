@@ -190,7 +190,7 @@ def writeHTML(res):
 
             line = line.replace(line[start: end + 1], content)
 
-        if line.strip().startswith(":)items&"):
+        if line.strip().startswith(":)codes&"):
             start = line.find(":)")
             end = line.find("&")
 
@@ -200,6 +200,34 @@ def writeHTML(res):
                 content += '<option value="%s">' % item
 
             line = line.replace(line[start: end + 1], content)
+
+        if line.strip().startswith(":)items&"):
+            start = line.find(":)")
+            end = line.find("&")
+
+            content = '<table width="100%">'
+            content += "<tr>"
+            content += "<td>날짜</td>"
+            content += "<td>종목</td>"
+            content += "<td>가격</td>"
+            content += "<td>수량</td>"
+            content += "</tr>"
+            id = dic_ip[res.client_address[0]]
+            list_file = os.listdir("data/%s" % id)
+            list_file.sort()
+            for file_name in list_file:
+                file = open("data/%s/%s" % (id, file_name), "r")
+                for file_line in file.readlines():
+                    content += "<tr>"
+                    list_line = file_line.split(",")
+                    content += "<td>%s</td>" % file_name.split(".")[0]
+                    content += "<td>%s</td>" % list_line[0].strip()
+                    content += "<td>%s</td>" % list_line[1].strip()
+                    content += "<td>%s</td>" % list_line[2].strip()
+                    content += "</tr>"
+            content += "</table>"
+            line = line.replace(line[start: end + 1], content)
+
 
         res.wfile.write(line.encode())
 
@@ -260,12 +288,13 @@ class HandlerHTTP(BaseHTTPRequestHandler):
                 unit = int(list_input[5].split("=")[1])
             except:
                 unit = 0
+           
+            if item != "" and unit != 0 and buy != 0:
+                id = dic_ip[self.client_address[0]]
+                str_date = "%4d%02d%02d" % (year, month, day)
             
-            id = dic_ip[self.client_address[0]]
-            str_date = "%4d%02d%02d" % (year, month, day)
-            
-            file = open("data/%s/%s.csv" % (id, str_date), "a")
-            file.write("%s, %d, %d\n" % (item, buy, unit))
+                file = open("data/%s/%s.csv" % (id, str_date), "a")
+                file.write("%s, %d, %d\n" % (item, buy, unit))
 
             self._redirect("home")
 
