@@ -153,7 +153,7 @@ def writeHTML(res):
             content += "str += '<img width=\"300px\" src=\"record/' + arr_date[idx][i] + '\"/>';}"
             content += "$('#record').html(str);"
             content += "}select();</script>"
-            
+            print(line)
             line = line.replace(line[start: end + 1], content)
 
         if line.strip().startswith(":)user&"):
@@ -224,6 +224,7 @@ def writeHTML(res):
                     content += "<td>%s</td>" % list_line[0].strip()
                     content += "<td>%s</td>" % list_line[1].strip()
                     content += "<td>%s</td>" % list_line[2].strip()
+                    content += "<td style='text-align:right;'><button>편집</button>&nbsp;<button>삭제</button></td>"
                     content += "</tr>"
             content += "</table>"
             line = line.replace(line[start: end + 1], content)
