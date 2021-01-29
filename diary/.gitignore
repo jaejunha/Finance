@@ -4,3 +4,5 @@ port.csv
 item.csv
 record/*
 data/*
+
+python/__pycache__/*
