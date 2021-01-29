@@ -153,7 +153,6 @@ def writeHTML(res):
             content += "str += '<img width=\"300px\" src=\"record/' + arr_date[idx][i] + '\"/>';}"
             content += "$('#record').html(str);"
             content += "}select();</script>"
-            print(line)
             line = line.replace(line[start: end + 1], content)
 
         if line.strip().startswith(":)user&"):
@@ -220,13 +219,47 @@ def writeHTML(res):
                 for file_line in file.readlines():
                     content += "<tr>"
                     list_line = file_line.split(",")
-                    content += "<td>%s</td>" % file_name.split(".")[0]
-                    content += "<td>%s</td>" % list_line[0].strip()
-                    content += "<td>%s</td>" % list_line[1].strip()
-                    content += "<td>%s</td>" % list_line[2].strip()
-                    content += "<td style='text-align:right;'><button>편집</button>&nbsp;<button>삭제</button></td>"
+                    date = file_name.split(".")[0]
+                    name = list_line[0].strip()
+                    buy = list_line[1].strip()
+                    unit = list_line[2].strip()
+                    content += "<td>%s</td>" % date
+                    content += "<td>%s</td>" % name
+                    content += "<td>%s</td>" % buy
+                    content += "<td>%s</td>" % unit
+                    content += "<td style='text-align:right;'><button>편집</button>&nbsp;<button onclick='deleteItem(%s, \"%s\", %s, %s)'>삭제</button></td>" % (date, name, buy, unit)
                     content += "</tr>"
             content += "</table>"
+            content += "<script>"
+            content += "function deleteItem(int_date, str_name, int_buy, int_unit){"
+            content += "var form = document.createElement('form');"
+            content += "form.setAttribute('method', 'post');"
+            content += "form.setAttribute('action', 'delete');"
+            content += "document.charset = 'utf-8';"
+            content += "var input_date = document.createElement('input');"
+            content += "input_date.setAttribute('type', 'hidden');"
+            content += "input_date.setAttribute('name', 'date');"
+            content += "input_date.setAttribute('value', int_date);"
+            content += "form.appendChild(input_date);"
+            content += "var input_name = document.createElement('input');"
+            content += "input_name.setAttribute('type', 'hidden');"
+            content += "input_name.setAttribute('name', 'name');"
+            content += "input_name.setAttribute('value', str_name);"
+            content += "form.appendChild(input_name);"
+            content += "var input_buy = document.createElement('input');"
+            content += "input_buy.setAttribute('type', 'hidden');"
+            content += "input_buy.setAttribute('name', 'buy');"
+            content += "input_buy.setAttribute('value', int_buy);"
+            content += "form.appendChild(input_buy);"
+            content += "var input_unit = document.createElement('input');"
+            content += "input_unit.setAttribute('type', 'hidden');"
+            content += "input_unit.setAttribute('name', 'unit');"
+            content += "input_unit.setAttribute('value', int_unit);"
+            content += "form.appendChild(input_unit);"
+            content += "document.body.appendChild(form);"
+            content += "form.submit();"
+            content += "}"
+            content += "</script>"
             line = line.replace(line[start: end + 1], content)
 
 
@@ -297,6 +330,15 @@ class HandlerHTTP(BaseHTTPRequestHandler):
                 file = open("data/%s/%s.csv" % (id, str_date), "a")
                 file.write("%s, %d, %d\n" % (item, buy, unit))
 
+            self._redirect("home")
+
+        elif self.path == "/delete":
+            length = int(self.headers['Content-length'])
+            utf8 = self.rfile.read(length).decode("utf-8")
+            utf8_treat = utf8.replace("+", " ")
+            list_input = utf8_treat.split("&")
+         
+            print(list_input)
             self._redirect("home")
 
     def do_GET(self):
