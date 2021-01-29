@@ -219,7 +219,7 @@ def writeHTML(res):
                     content += "<td>%s</td>" % name
                     content += "<td>%s</td>" % buy
                     content += "<td>%s</td>" % unit
-                    content += "<td style='text-align:right;'><button>편집</button>&nbsp;<button onclick='deleteItem(%s, \"%s\", %s, %s)'>삭제</button></td>" % (date, name, buy, unit)
+                    content += "<td style='text-align:right;'><button onclick='deleteItem(%s, \"%s\", %s, %s)'>삭제</button></td>" % (date, name, buy, unit)
                     content += "</tr>"
             content += "</table>"
             content += "<script>"
@@ -297,8 +297,8 @@ class HandlerHTTP(BaseHTTPRequestHandler):
                 self._redirect("/")
 
         elif self.path == "/add":
-            length = int(self.headers['Content-length'])
-            utf8 = self.rfile.read(length).decode("utf-8")
+            len_header = int(self.headers['Content-length'])
+            utf8 = self.rfile.read(len_header).decode("utf-8")
             utf8_treat = utf8.replace("+", " ")
             list_input = utf8_treat.split("&")
             
@@ -316,21 +316,39 @@ class HandlerHTTP(BaseHTTPRequestHandler):
                 unit = 0
            
             if item != "" and unit != 0 and buy != 0:
-                id = dic_ip[self.client_address[0]]
+                str_id = dic_ip[self.client_address[0]]
                 str_date = "%4d%02d%02d" % (year, month, day)
             
-                file = open("data/%s/%s.csv" % (id, str_date), "a")
+                file = open("data/%s/%s.csv" % (str_id, str_date), "a")
                 file.write("%s, %d, %d\n" % (item, buy, unit))
 
             self._redirect("home")
 
         elif self.path == "/delete":
-            length = int(self.headers['Content-length'])
-            utf8 = self.rfile.read(length).decode("utf-8")
+            len_header = int(self.headers['Content-length'])
+            utf8 = self.rfile.read(len_header).decode("utf-8")
             utf8_treat = utf8.replace("+", " ")
             list_input = utf8_treat.split("&")
-         
-            print(list_input)
+        
+            str_date = list_input[0].split("=")[1]
+            str_item = urllib.parse.unquote(list_input[1].split("=")[1])
+            str_buy = list_input[2].split("=")[1]
+            str_unit = list_input[3].split("=")[1]
+            str_except = "%s, %s, %s\n" % (str_item, str_buy, str_unit)
+
+            str_id = dic_ip[self.client_address[0]]
+            
+            file = open("data/%s/%s.csv" % (str_id, str_date), "r")
+            list_line = file.readlines()
+            file.close()
+
+            file = open("data/%s/%s.csv" % (str_id, str_date), "w")
+            for str_line in list_line:
+                if str_line == str_except:
+                    continue
+                file.write(str_line)
+            file.close()
+
             self._redirect("home")
 
     def do_GET(self):
