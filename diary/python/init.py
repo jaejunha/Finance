@@ -22,7 +22,9 @@ def getPort():
 
     return int_port
 
-def getAccount(dic_account):
+def getAccount():
+    dic_account = {}
+
     file = open("account.csv", "r")
     for str_line in file.readlines():
         if len(str_line.strip()) > 0:
@@ -36,6 +38,8 @@ def getAccount(dic_account):
                 os.chdir("data")
                 os.mkdir(str_id)
                 os.chdir("..")
+
+    return dic_account
 
 def getLastPage(int_sosok):
     str_url = "%s?sosok=%d" % (URL_SUM, int_sosok)
@@ -67,7 +71,9 @@ def getItems(list_item, list_line):
 
             list_item.append(str_name)
 
-def downloadItem(list_item):
+def downloadItem():
+    list_item = []
+
     date_today = date.today()
     str_today = date_today.strftime("%y%m%d")
     try:
@@ -80,7 +86,7 @@ def downloadItem(list_item):
 
                 list_item.append(str_line.strip())
             print("Already item codes are updated")
-            return
+            return list_item
 
     except FileNotFoundError:
         pass
@@ -103,4 +109,4 @@ def downloadItem(list_item):
 
     print("Download is finished")
 
-
+    return list_item
