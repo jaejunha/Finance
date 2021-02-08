@@ -250,9 +250,13 @@ def writeHTML(res):
             content += "<table width='100%'>"
             content += "<tr><td>날짜</td><td>실현손익(전에 물린 손절 제외)</td><td>매수타점(상승일대비)</td><td>매수타점(연속하락)</td></tr>"
             for date in dic_day.keys():
-                content += "<tr><td>%d</td><td>%s</td><td>%.2f%%</td><td>%d</td></tr>" % (date, dic_day[date]["profit"], (dic_day[date]["buy_percent"] / dic_day[date]["count"]), (dic_day[date]["buy_count"] / dic_day[date]["count"]))
+                str_profit = format(dic_day[date]["profit"], ",")
+                if dic_day[date]["profit"] > 0:
+                    str_profit = "+" + str_profit
+                content += "<tr><td>%d</td><td>%s</td><td>%.2f%%</td><td>%d</td></tr>" % (date, str_profit, (dic_day[date]["buy_percent"] / dic_day[date]["count"]), (dic_day[date]["buy_count"] / dic_day[date]["count"]))
             content += "</table>"
             content += "<br>"
+            content += "총 %d 거래일<br>" % len(dic_day)
             content += "총 실현손익(전에 물린 손절 제외) %s<br>" % format(sum_result, ",")
             content += "<br>"
             content += "<hr>"
