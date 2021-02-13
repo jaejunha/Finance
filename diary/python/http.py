@@ -243,7 +243,7 @@ def writeHTML(res):
                 content += "</tr>"
             content += "</table>"
             content += "<br>"
-            content += "평균 매수타점 상승일대비 %+.2f%% 연속 %d일 하락<br>" % (sum_buy_percent / len_file_line, sum_count / len_file_line)
+            content += "평균 매수타점 상승일대비 %+.2f%% 연속 %.1f 일 하락<br>" % (sum_buy_percent / len_file_line, sum_count / len_file_line)
             content += "<br>"
             content += "<hr>"
             content += "<br>"
