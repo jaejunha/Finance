@@ -9,6 +9,31 @@
 				margin-left: 0;
 				width: 225px;
 			}
+			cover {
+				position: absolute;
+				left: 0;
+				top: 0;
+				width: 100%;
+				height: 100%;
+				opacity: 0.8;
+				background-image: url("img/background.jpg");
+				background-size: cover;
+				z-index: -1;
+			}
+			form {
+				position: absolute;
+				left: calc(50% - 119px);
+				top: calc(50% - 82px);
+				width: 228px;
+				height: 154px;
+				padding: 10px;
+				padding-top: 0;
+
+				background-color: #fff;
+				moz-box-shadow: 0 0 10px rgba(0, 0, 0, 1);
+				-webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 1);
+				box-shadow: 0 0 10px rgba(0, 0, 0, 1);
+			}
 			form div span { 
 				display: inline-block;
 				width: 80px; 
@@ -33,9 +58,10 @@
 		</style>
 	</head>
 	<body>
+		<cover></cover>
 		<form action="/check" method="post">
 			<div>
-				<b>Daily stock diary</b>
+				<b>Daily Stock Diary</b>
 			</div>
 			<hr>
 			<div>
