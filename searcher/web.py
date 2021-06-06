@@ -16,7 +16,7 @@ IDX_PERCENT = 3
 IDX_VOL = 5
 IDX_LOW = 7
 
-TOTAL_TOP = 10
+TOTAL_TOP = 15
 
 str_print = None
 
@@ -46,18 +46,44 @@ def getDicItem(dic_item):
                         dic_item[str_code] = {"name": str_name, "price": int_price, "percent": float_percent, "vol": int_vol, "low": int_low}
                         bool_find = False
         
-def printDicDiff(dic_pre, dic_cur):
+def printDic(dic_pre, dic_cur):
+    list_rate = []
     list_diff = []
     
     for str_code in dic_cur.keys():
+        list_rate.append( (-dic_cur[str_code]["percent"], str_code) )
         if str_code in dic_pre.keys() and dic_cur[str_code]["percent"] <= dic_pre[str_code]["percent"]:
             list_diff.append( (dic_pre[str_code]["percent"] - dic_cur[str_code]["percent"], str_code) )
-            
+    
+    list_rate.sort(reverse = True)    
     list_diff.sort(reverse = True)
     
     global str_print
     
-    str_print = ""
+    str_print = "<h1>등락률</h1>"
+    str_print += "<table style='width: 100%;'>"
+    str_print += "<tr>"
+    str_print += "<td>이름</td><td>등락률</td><td>거래대금</td><td>현재가 (저가)</td>"
+    str_print += "</tr>"
+    for int_i, ele_rate in enumerate(list_rate):
+        if int_i == TOTAL_TOP:
+            break
+        
+        str_code = ele_rate[1]
+        
+        str_print += "<tr>"
+        str_print += "<td>%s</td>" % dic_cur[str_code]["name"]
+        str_print += "<td>%.2f%%</td>" % dic_cur[str_code]["percent"]
+        str_print += "<td>%s</td>" % dic_cur[str_code]["vol"]
+        str_print += "<td>%s (%s)</td>" % (format(dic_cur[str_code]["price"], ","), format(dic_cur[str_code]["low"], ","))
+        str_print += "</tr>"
+    str_print += "</table>"
+    
+    str_print += "<h1>누적등락률</h1>"
+    str_print += "<table style='width: 100%;'>"
+    str_print += "<tr>"
+    str_print += "<td>이름</td><td>등락률 (직전 차이)</td><td>거래대금</td><td>현재가 (저가)</td>"
+    str_print += "</tr>"
     for int_i, ele_diff in enumerate(list_diff):
         if int_i == TOTAL_TOP:
             break
@@ -65,8 +91,35 @@ def printDicDiff(dic_pre, dic_cur):
         float_diff = ele_diff[0]
         str_code = ele_diff[1]
         
-        str_print += (dic_cur[str_code]["name"] + ", " + str(dic_cur[str_code]["vol"]) + ", " + str(dic_cur[str_code]["price"]) + "(" + str(dic_cur[str_code]["low"]) + ")" + str(dic_cur[str_code]["percent"]) + "(" + str(float_diff) + "%)<br>")
+        str_print += "<tr>"
+        str_print += "<td>%s</td>" % dic_cur[str_code]["name"]
+        str_print += "<td>%.2f%% (%.2f%%)</td>" % (dic_cur[str_code]["percent"], float_diff)
+        str_print += "<td>%s</td>" % dic_cur[str_code]["vol"]
+        str_print += "<td>%s (%s)</td>" % (format(dic_cur[str_code]["price"], ","), format(dic_cur[str_code]["low"], ","))
+        str_print += "</tr>"
         print(str_code, float_diff, dic_cur[str_code])
+    str_print += "</table>"
+    
+    str_print += "<h1>변화량</h1>"
+    str_print += "<table style='width: 100%;'>"
+    str_print += "<tr>"
+    str_print += "<td>이름</td><td>등락률 (직전 차이)</td><td>거래대금</td><td>현재가 (저가)</td>"
+    str_print += "</tr>"
+    for int_i, ele_diff in enumerate(list_diff):
+        if int_i == TOTAL_TOP:
+            break
+        
+        float_diff = ele_diff[0]
+        str_code = ele_diff[1]
+        
+        str_print += "<tr>"
+        str_print += "<td>%s</td>" % dic_cur[str_code]["name"]
+        str_print += "<td>%.2f%% (%.2f%%)</td>" % (dic_cur[str_code]["percent"], float_diff)
+        str_print += "<td>%s</td>" % dic_cur[str_code]["vol"]
+        str_print += "<td>%s (%s)</td>" % (format(dic_cur[str_code]["price"], ","), format(dic_cur[str_code]["low"], ","))
+        str_print += "</tr>"
+        print(str_code, float_diff, dic_cur[str_code])
+    str_print += "</table>"
      
 def copyDic(dic_pre, dic_cur):
     dic_pre.clear()
@@ -80,7 +133,7 @@ def updateData():
     dic_cur = {}
     while True:
         getDicItem(dic_cur)
-        printDicDiff(dic_pre, dic_cur)
+        printDic(dic_pre, dic_cur)
         copyDic(dic_pre, dic_cur)
     
         time.sleep(10)
