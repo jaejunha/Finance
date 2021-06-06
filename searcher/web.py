@@ -1,6 +1,7 @@
 import requests
 import time
 import threading
+import os
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import unquote
 
@@ -19,6 +20,26 @@ IDX_LOW = 7
 TOTAL_TOP = 15
 
 str_print = None
+
+def getDicTotal(dic_total):
+    list_name = os.listdir()
+    list_candidate = []
+    for str_name in list_name:
+        if ".csv" in str_name:
+            list_candidate.append( (int(str_name.replace(".csv", "")), str_name) )
+            
+    list_candidate.sort(reverse = True)
+    file = open(list_candidate[0][1], "r")
+    for int_i, str_line in enumerate(file.readlines()):
+        if int_i == 0:
+            continue
+            
+        list_ele = str_line.split(",")
+        str_code = list_ele[0].strip()
+        int_day = int(list_ele[1].strip())
+        float_total = float(list_ele[4].strip()[:-1])
+        
+        dic_total[str_code] = {"day": int_day, "total": float_total}
 
 def getDicItem(dic_item):
     for int_type in range(TOTAL_TYPE):  
@@ -46,16 +67,25 @@ def getDicItem(dic_item):
                         dic_item[str_code] = {"name": str_name, "price": int_price, "percent": float_percent, "vol": int_vol, "low": int_low}
                         bool_find = False
         
-def printDic(dic_pre, dic_cur):
+def printDic(dic_total, dic_pre, dic_cur):
     list_rate = []
+    list_total = []
     list_diff = []
     
     for str_code in dic_cur.keys():
-        list_rate.append( (-dic_cur[str_code]["percent"], str_code) )
+        list_rate.append( (dic_cur[str_code]["percent"], str_code) )
+        
+        if str_code in dic_total.keys():
+            float_total = ((1 + dic_total[str_code]["total"] / 100.0)*(1 + dic_cur[str_code]["percent"] / 100.0) - 1) * 100
+            list_total.append( (float_total, str_code) )
+        else:
+            list_total.append( (dic_cur[str_code]["percent"], str_code) )
+            
         if str_code in dic_pre.keys() and dic_cur[str_code]["percent"] <= dic_pre[str_code]["percent"]:
             list_diff.append( (dic_pre[str_code]["percent"] - dic_cur[str_code]["percent"], str_code) )
     
-    list_rate.sort(reverse = True)    
+    list_rate.sort()
+    list_total.sort()
     list_diff.sort(reverse = True)
     
     global str_print
@@ -65,11 +95,11 @@ def printDic(dic_pre, dic_cur):
     str_print += "<tr>"
     str_print += "<td>이름</td><td>등락률</td><td>거래대금</td><td>현재가 (저가)</td>"
     str_print += "</tr>"
-    for int_i, ele_rate in enumerate(list_rate):
+    for int_i, ele_total in enumerate(list_rate):
         if int_i == TOTAL_TOP:
             break
         
-        str_code = ele_rate[1]
+        str_code = ele_total[1]
         
         str_print += "<tr>"
         str_print += "<td>%s</td>" % dic_cur[str_code]["name"]
@@ -82,22 +112,25 @@ def printDic(dic_pre, dic_cur):
     str_print += "<h1>누적등락률</h1>"
     str_print += "<table style='width: 100%;'>"
     str_print += "<tr>"
-    str_print += "<td>이름</td><td>등락률 (직전 차이)</td><td>거래대금</td><td>현재가 (저가)</td>"
+    str_print += "<td>이름</td><td>등락률 (누적)</td><td>하락 일수</td><td>거래대금</td><td>현재가 (저가)</td>"
     str_print += "</tr>"
-    for int_i, ele_diff in enumerate(list_diff):
+    for int_i, ele_total in enumerate(list_total):
         if int_i == TOTAL_TOP:
             break
         
-        float_diff = ele_diff[0]
-        str_code = ele_diff[1]
+        float_total = ele_total[0]
+        str_code = ele_total[1]
         
         str_print += "<tr>"
         str_print += "<td>%s</td>" % dic_cur[str_code]["name"]
-        str_print += "<td>%.2f%% (%.2f%%)</td>" % (dic_cur[str_code]["percent"], float_diff)
+        str_print += "<td>%.2f%% (%.2f%%)</td>" % (dic_cur[str_code]["percent"], float_total)
+        if str_code in dic_total.keys():
+            str_print += "<td>%d</td>" % (dic_total[str_code]["day"] + 1)
+        else:
+            str_print += "<td>1</td>"
         str_print += "<td>%s</td>" % dic_cur[str_code]["vol"]
         str_print += "<td>%s (%s)</td>" % (format(dic_cur[str_code]["price"], ","), format(dic_cur[str_code]["low"], ","))
         str_print += "</tr>"
-        print(str_code, float_diff, dic_cur[str_code])
     str_print += "</table>"
     
     str_print += "<h1>변화량</h1>"
@@ -128,12 +161,16 @@ def copyDic(dic_pre, dic_cur):
         dic_pre[str_code] = {"name": dic_cur[str_code]["name"], "price": dic_cur[str_code]["price"], "percent": dic_cur[str_code]["percent"], "vol": dic_cur[str_code]["vol"], "low": dic_cur[str_code]["low"]}
 
 def updateData():
+    
+    dic_total = {}
+    getDicTotal(dic_total)
+
     dic_pre = {}
     getDicItem(dic_pre)
     dic_cur = {}
     while True:
         getDicItem(dic_cur)
-        printDic(dic_pre, dic_cur)
+        printDic(dic_total, dic_pre, dic_cur)
         copyDic(dic_pre, dic_cur)
     
         time.sleep(10)
