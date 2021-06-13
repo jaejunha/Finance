@@ -2,6 +2,7 @@ import datetime
 import requests
 import sys
 import os
+import filecmp
 
 """
 NAVER로 부터 Data 크롤링
@@ -128,10 +129,19 @@ def saveFile(file, dic_item):
         file.write("%s, %s, %d, %d, %d, %d, %.2f, %d, %d, %d, %d\n" % (str_code, str_name, int_type, int_sum, int_volume, int_delta, float_percent, int_close, int_open, int_high, int_low))
 
 """
-메인 함수
+다운로드 함수
 """
-if __name__ == "__main__":
+def downloadFile():
 
+    # 가장 최신 파일 찾기
+    file_recent = None
+    try:
+        list_data = os.listdir("data")
+        list_data.sort(reverse = True)
+        file_recent = "data/" + list_data[0]
+    except:
+        pass
+        
     # 종목 정보를 저장할 딕셔너리
     dic_item = {}
 
@@ -148,8 +158,21 @@ if __name__ == "__main__":
     # data 폴더 없으면 생성
     if os.path.isdir("data") is False:
         os.makedirs("data")
+    
+    # 이전 파일이 하나도 없으면 년월일.csv로 저장
+    if file_recent == None:
+        file = open(datetime.datetime.today().strftime("data/%Y%m%d.csv"), "w")
+        saveFile(file, dic_item)
+        file.close()
+    # 이전 파일이 있다면 임시로 파일 저장 후 비교 후 년월일.csv로 저장
+    else:
+        file = open("data/temp.csv", "w")
+        saveFile(file, dic_item)
+        file.close()
         
-    # 파일 이름은 년월일.csv
-    file = open(datetime.datetime.today().strftime("data/%Y%m%d.csv"), "w")
-    saveFile(file, dic_item)
-    file.close()
+        if filecmp.cmp(file_recent, "data/temp.csv") is False:
+            os.system("mv data/temp.csv %s" % datetime.datetime.today().strftime("data/%Y%m%d.csv"))
+            print("파일 다운로드 완료")
+        else:
+            print("파일이 이미 업데이트 되었습니다")
+        os.system("rm data/temp.csv")
