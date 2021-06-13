@@ -161,12 +161,12 @@ def downloadFile():
     
     # 이전 파일이 하나도 없으면 년월일.csv로 저장
     if file_recent == None:
-        file = open(datetime.datetime.today().strftime("data/%Y%m%d.csv"), "w")
+        file = open(datetime.datetime.today().strftime("data/%Y%m%d.csv"), "w", encoding = "euc-kr")
         saveFile(file, dic_item)
         file.close()
     # 이전 파일이 있다면 임시로 파일 저장 후 비교 후 년월일.csv로 저장
     else:
-        file = open("data/temp.csv", "w")
+        file = open("data/temp.csv", "w", encoding = "euc-kr")
         saveFile(file, dic_item)
         file.close()
         
@@ -175,4 +175,4 @@ def downloadFile():
             print("파일 다운로드 완료")
         else:
             print("파일이 이미 업데이트 되었습니다")
-        os.system("rm data/temp.csv")
+            os.system("rm data/temp.csv")
