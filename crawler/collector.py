@@ -8,16 +8,16 @@ import filecmp
 NAVER로 부터 Data 크롤링
 """
 WEB_NAVER = "https://finance.naver.com/"
-WEB_SISE_NORMAL = WEB_NAVER + "sise/sise_market_sum.nhn"
-WEB_SISE_FIELD = WEB_NAVER + "sise/field_submit.nhn?menu=market_sum"
-WEB_SISE_RET = "&returnUrl=http%3A%2F%2Ffinance.naver.com%2Fsise%2Fsise_market_sum.nhn"
+WEB_SISE_NORMAL = WEB_NAVER + "sise/sise_market_sum.naver"
+WEB_SISE_FIELD = WEB_NAVER + "sise/field_submit.naver?menu=market_sum"
+WEB_SISE_RET = "&returnUrl=http%3A%2F%2Ffinance.naver.com%2Fsise%2Fsise_market_sum.naver"
 WEB_PARA = "&fieldIds=amount&fieldIds=market_sum&fieldIds=open_val&fieldIds=high_val&fieldIds=low_val"
 
 NUM_TYPE = 2
 TYPE_KOSPI = 0
 TYPE_KOSDAQ = 1
 
-PARSER_CODE = "/item/main.nhn?code="
+PARSER_CODE = "/item/main.naver?code="
 
 IDX_CLOSE = 1
 IDX_DELTA = 2
